@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L17Handlers">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Cada controle MAUI (a 'virtual view') tem um Handler que cria e controla a view NATIVA (PlatformView). O Handler tem um Mapper: um dicionário 'nome da propriedade → função que aplica o valor na view nativa'. Estender o Mapper é a forma oficial de customizar controles." />
+
+    <Label Text="1. O fluxo" Style="{StaticResource H2}" />
+    <CodeBlock Language="text"><![CDATA[
+      entry.TextColor = Colors.Red
+          │
+          ▼  (PropertyChanged)
+      EntryHandler.Mapper["TextColor"](handler, entry)
+          │
+          ├─ Windows:  handler.PlatformView (TextBox).Foreground = ...
+          └─ macOS:    handler.PlatformView (UITextField).TextColor = ...
+    ]]></CodeBlock>
+
+    <Label Text="2. Customizando com AppendToMapping" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Este app remove a borda nativa de um tipo específico de Entry (BorderlessEntry). Veja Core/HandlerCustomizations.cs — chamado em MauiProgram:" />
+    <CodeBlock Language="csharp"><![CDATA[
+      Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Borderless", (handler, view) =>
+      {
+          if (view is not BorderlessEntry) return;   // só afeta o nosso tipo
+      #if WINDOWS
+          handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+      #elif MACCATALYST
+          handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+      #endif
+      });
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+        <VerticalStackLayout>
+          <Label Text="Entry normal" Style="{StaticResource Caption}" />
+          <Entry Placeholder="Com borda nativa" />
+        </VerticalStackLayout>
+        <VerticalStackLayout Grid.Column="1">
+          <Label Text="BorderlessEntry (mapper customizado)" Style="{StaticResource Caption}" />
+          <Border Padding="8,0" StrokeShape="RoundRectangle 20" Stroke="{StaticResource Primary}">
+            <BorderlessEntry Placeholder="Sem borda nativa, dentro de um Border" />
+          </Border>
+        </VerticalStackLayout>
+      </Grid>
+    </Border>
+    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+      <Label Text="AppendToMapping" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Column="1" Text="Executa DEPOIS do mapeamento padrão (o mais comum)." />
+      <Label Grid.Row="1" Text="PrependToMapping" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="1" Grid.Column="1" Text="Executa ANTES do padrão." />
+      <Label Grid.Row="2" Text="ModifyMapping" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="2" Grid.Column="1" Text="Substitui/envolve o mapeamento padrão (recebe a ação original)." />
+    </Grid>
+    <TipCard Kind="Warning">
+      Mapper é GLOBAL: um AppendToMapping afeta TODOS os controles daquele tipo no app. Filtre (if view is MeuTipo) ou crie uma subclasse, como BorderlessEntry.
+    </TipCard>
+
+    <Label Text="3. Acessando a view nativa em tempo de execução" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}" Text="Depois que o handler existe (evento HandlerChanged ou Loaded), handler.PlatformView é o controle nativo:" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="8">
+        <Button x:Name="NativeButton" Text="Mostrar info nativa deste botão" Clicked="OnShowNative" HorizontalOptions="Start" />
+        <Label x:Name="NativeInfo" Style="{StaticResource Mono}" />
+      </VerticalStackLayout>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      button.HandlerChanged += (s, e) =>
+      {
+      #if WINDOWS
+          var nativo = (Microsoft.UI.Xaml.Controls.Button)button.Handler!.PlatformView!;
+          nativo.CornerRadius = new Microsoft.UI.Xaml.CornerRadius(20);
+      #elif MACCATALYST
+          var nativo = (UIKit.UIButton)button.Handler!.PlatformView!;
+          nativo.Layer.CornerRadius = 20;
+      #endif
+      };
+    ]]></CodeBlock>
+
+    <Label Text="4. Código por plataforma: 3 técnicas" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+      <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="#if WINDOWS / MACCATALYST" FontAttributes="Bold" />
+          <Label FontSize="13" Text="Diretivas de compilação. Rápido para trechos pequenos." />
+        </VerticalStackLayout>
+      </Border>
+      <Border Grid.Column="1" Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="partial class + Platforms/" FontAttributes="Bold" />
+          <Label FontSize="13" Text="Declare 'partial void Configurar();' no código comum e implemente em Platforms/Windows e Platforms/MacCatalyst." />
+        </VerticalStackLayout>
+      </Border>
+      <Border Grid.Column="2" Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="OnPlatform / DeviceInfo" FontAttributes="Bold" />
+          <Label FontSize="13" Text="Valores diferentes em XAML ({OnPlatform}) ou em tempo de execução (DeviceInfo.Platform == DevicePlatform.WinUI)." />
+        </VerticalStackLayout>
+      </Border>
+    </Grid>
+    <CodeBlock Language="csharp" Title="Técnica 2: partial class"><![CDATA[
+      // Services/Notificador.cs (comum)
+      public partial class Notificador
+      {
+          public partial void Mostrar(string texto);
+      }
+
+      // Platforms/Windows/Notificador.cs        // Platforms/MacCatalyst/Notificador.cs
+      public partial class Notificador            public partial class Notificador
+      {                                           {
+          public partial void Mostrar(string t)       public partial void Mostrar(string t)
+          { /* API do Windows */ }                    { /* API da Apple */ }
+      }                                           }
+    ]]></CodeBlock>
+
+    <Label Text="5. Criando um Handler do zero (visão geral)" Style="{StaticResource H2}" />
+    <CodeBlock Language="csharp"><![CDATA[
+      public class MeuControle : View { /* BindableProperties */ }
+
+      public partial class MeuControleHandler : ViewHandler<MeuControle, PlatformViewType>
+      {
+          public static IPropertyMapper<MeuControle, MeuControleHandler> Mapper =
+              new PropertyMapper<MeuControle, MeuControleHandler>(ViewMapper)
+              {
+                  [nameof(MeuControle.Cor)] = MapCor,
+              };
+
+          public MeuControleHandler() : base(Mapper) { }
+          protected override PlatformViewType CreatePlatformView() => new PlatformViewType();
+          static partial void MapCor(MeuControleHandler h, MeuControle v);   // por plataforma
+      }
+
+      // MauiProgram: .ConfigureMauiHandlers(h => h.AddHandler<MeuControle, MeuControleHandler>());
+    ]]></CodeBlock>
+  </VerticalStackLayout>
+</ContentView>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L02Projeto">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Um app MAUI é um 'single project': um único .csproj que gera o app para todas as plataformas. Vamos dissecar o próprio MauiLearn." />
+
+    <Label Text="A estrutura de pastas" Style="{StaticResource H2}" />
+    <CodeBlock Language="text" Title="src/MauiLearn"><![CDATA[
+      MauiLearn.csproj        ← plataformas, recursos e pacotes
+      MauiProgram.cs          ← ponto de entrada: configura o app (DI, fontes, handlers)
+      App.xaml / App.xaml.cs  ← recursos globais + CreateWindow()
+      AppShell.xaml           ← navegação (flyout, rotas)
+      GlobalXmlns.cs          ← registra nossos namespaces no xmlns global
+      Pages/                  ← telas
+      Controls/               ← controles reutilizáveis
+      ViewModels/  Core/      ← lógica (MVVM, serviços)
+      Resources/
+        AppIcon/  Splash/     ← ícone e splash (SVG → gerados no build)
+        Images/               ← imagens (MauiImage)
+        Fonts/                ← fontes (MauiFont)
+        Raw/                  ← arquivos brutos (MauiAsset)
+        Styles/               ← Colors.xaml e Styles.xaml
+      Platforms/
+        MacCatalyst/          ← AppDelegate, Program, Info.plist, Entitlements
+        Windows/              ← App.xaml (WinUI), app.manifest
+    ]]></CodeBlock>
+
+    <Label Text="1. MauiProgram: o 'main' do app" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Cada plataforma tem seu ponto de entrada nativo (Platforms/*), mas todos chamam MauiProgram.CreateMauiApp(). Ali usamos o padrão builder do .NET (o mesmo do ASP.NET Core)." />
+    <CodeBlock Language="csharp" Title="MauiProgram.cs"><![CDATA[
+      public static MauiApp CreateMauiApp()
+      {
+          var builder = MauiApp.CreateBuilder();
+          builder
+              .UseMauiApp<App>()
+              .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSans"));
+
+          builder.Services.AddSingleton<ProgressService>();   // injeção de dependência
+          builder.Services.AddTransient<HomePage>();
+
+          return builder.Build();
+      }
+    ]]></CodeBlock>
+
+    <Label Text="2. App e Window" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="App.xaml guarda recursos globais (cores, estilos). App.xaml.cs cria a janela principal sobrescrevendo CreateWindow — Application.MainPage está obsoleto desde o .NET 9." />
+    <CodeBlock Language="csharp" Title="App.xaml.cs"><![CDATA[
+      protected override Window CreateWindow(IActivationState? activationState)
+      {
+          return new Window(new AppShell())
+          {
+              Title = "MauiLearn",
+              Width = 1280, Height = 840,      // desktop: tamanho inicial
+              MinimumWidth = 900,
+          };
+      }
+    ]]></CodeBlock>
+
+    <Label Text="3. Recursos (o build faz o trabalho pesado)" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+      <Label Text="MauiImage" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Column="1" Text="PNG/JPG/SVG. SVGs viram PNG em vários tamanhos. Use Source=&quot;nome.png&quot;." />
+      <Label Grid.Row="1" Text="MauiFont" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="1" Grid.Column="1" Text="Fontes .ttf/.otf, registradas com um alias em ConfigureFonts." />
+      <Label Grid.Row="2" Text="MauiAsset" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="2" Grid.Column="1" Text="Arquivos brutos (JSON, HTML, TXT…), lidos com FileSystem.OpenAppPackageFileAsync." />
+      <Label Grid.Row="3" Text="MauiIcon" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="3" Grid.Column="1" Text="Ícone do app (fundo + primeiro plano) gerado para cada plataforma." />
+      <Label Grid.Row="4" Text="MauiSplashScreen" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="4" Grid.Column="1" Text="Tela de abertura (mais relevante em mobile)." />
+    </Grid>
+
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="8">
+        <Label Text="Ao vivo: lendo Resources/Raw/sobre.txt" FontAttributes="Bold" />
+        <Button Text="Ler arquivo bruto (MauiAsset)" Clicked="OnReadAsset" HorizontalOptions="Start" />
+        <Label x:Name="AssetText" Style="{StaticResource Mono}" />
+        <HorizontalStackLayout Spacing="12">
+          <Image Source="maui_logo.png" HeightRequest="48" />
+          <Label Text="← esta imagem é um SVG (maui_logo.svg) convertido para PNG no build." VerticalOptions="Center" />
+        </HorizontalStackLayout>
+      </VerticalStackLayout>
+    </Border>
+
+    <Label Text="4. Platforms/: o código nativo" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Arquivos dentro de Platforms/Windows só compilam para Windows; os de Platforms/MacCatalyst, só para Mac. É ali que ficam AppDelegate (Mac), App.xaml do WinUI (Windows), Info.plist, Entitlements.plist e manifestos." />
+    <TipCard Kind="Desktop">
+      No Mac Catalyst, permissões ficam em Entitlements.plist (ex.: com.apple.security.network.client para acessar a internet com o App Sandbox ligado).
+      No Windows, WindowsPackageType=None no .csproj faz o app rodar sem empacotamento MSIX — mais simples para desenvolver.
+    </TipCard>
+
+    <Label Text="5. O ciclo do build" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="dotnet build: (1) o Resizetizer processa imagens/fontes; (2) o XAML Source Generator transforma cada .xaml em C#; (3) o compilador C# gera o assembly; (4) o empacotamento cria o .app (Mac) ou .exe (Windows)." />
+    <TipCard Kind="New">
+      No .NET MAUI 11 o XAML é compilado por um Source Generator por padrão. Erros de XAML aparecem no build, e você pode até depurar o C# gerado (pasta obj/…/Microsoft.Maui.Controls.SourceGen).
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L03HotReload">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Hot Reload aplica suas alterações no app EM EXECUÇÃO, sem reiniciar nem perder o estado. É a ferramenta que mais acelera o aprendizado de UI: você muda, salva e vê." />
+
+    <Label Text="Dois tipos de Hot Reload" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="🎨 XAML Hot Reload" FontAttributes="Bold" FontSize="16" />
+          <Label Text="Altera propriedades, adiciona/remove elementos, muda estilos e recursos. A página é atualizada ao salvar o .xaml." FontSize="13" />
+        </VerticalStackLayout>
+      </Border>
+      <Border Grid.Column="1" Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="⚙️ .NET (C#) Hot Reload" FontAttributes="Bold" FontSize="16" />
+          <Label Text="Altera o CORPO de métodos (ex.: um event handler). A mudança vale na próxima vez que o método rodar." FontSize="13" />
+        </VerticalStackLayout>
+      </Border>
+    </Grid>
+
+    <Label Text="Como ativar" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}">
+      <Label.FormattedText>
+        <FormattedString>
+          <Span Text="Visual Studio 2026 (Windows): " FontAttributes="Bold" />
+          <Span Text="rode com F5 em Debug. Em Ferramentas › Opções › Depuração › .NET/C++ Hot Reload, deixe 'Apply Hot Reload on File Save' ligado.&#10;" />
+          <Span Text="VS Code (Windows/macOS): " FontAttributes="Bold" />
+          <Span Text="instale a extensão .NET MAUI (com C# Dev Kit), escolha o alvo na barra de status e rode com F5. Salve o arquivo para aplicar.&#10;" />
+          <Span Text="JetBrains Rider: " FontAttributes="Bold" />
+          <Span Text="Debug + habilite XAML Hot Reload nas configurações de build/run." />
+        </FormattedString>
+      </Label.FormattedText>
+    </Label>
+
+    <TipCard Kind="New">
+      O .NET MAUI 11 tem dois modos de XAML Hot Reload: Legacy (padrão, suportado por todas as IDEs) e SourceGen — incremental, baseado no XAML Source Generator. Para testar o novo modo, descomente &lt;MauiXamlHotReload&gt;SourceGen&lt;/MauiXamlHotReload&gt; no .csproj (requer uma IDE atualizada).
+    </TipCard>
+
+    <Label Text="🧪 Experimente AGORA" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="12">
+        <Label Style="{StaticResource Body}"
+               Text="1) Com o app rodando em Debug, abra src/MauiLearn/Lessons/L03HotReload.xaml no editor." />
+        <Label Style="{StaticResource Body}"
+               Text="2) Procure o Label abaixo (x:Name=&quot;Alvo&quot;) e mude Text, TextColor ou FontSize. Salve." />
+
+        <!-- 👇 MUDE ESTE LABEL E SALVE O ARQUIVO 👇 -->
+        <Label x:Name="Alvo"
+               Text="Mude meu texto e minha cor!"
+               TextColor="#512BD4"
+               FontSize="24"
+               FontAttributes="Bold" />
+        <!-- 👆 ======================================= 👆 -->
+
+        <Label Style="{StaticResource Body}"
+               Text="3) Agora o C#: clique no botão; depois abra L03HotReload.xaml.cs, mude a mensagem em OnHotReloadClicked, salve e clique de novo." />
+        <Button Text="Clique para ver a mensagem do C#" Clicked="OnHotReloadClicked" HorizontalOptions="Start" />
+        <Label x:Name="CSharpOutput" FontSize="16" />
+      </VerticalStackLayout>
+    </Border>
+
+    <Label Text="O que o Hot Reload NÃO aplica" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="• Mudanças no .csproj, pacotes NuGet, Info.plist ou recursos MauiImage/MauiFont novos.&#10;• Novos tipos, mudanças de assinatura de métodos ou campos em alguns cenários (rude edits).&#10;• Código que já rodou e não roda de novo (ex.: um construtor) — recrie a tela para ver o efeito.&#10;Nesses casos, pare e rode de novo (ou use 'Restart' na IDE)." />
+
+    <TipCard Kind="Tip">
+      Nos Desafios, o botão "↻ Recarregar área" recria a área de trabalho — útil quando você muda algo em C# que só roda no construtor.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

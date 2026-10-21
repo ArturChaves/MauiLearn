@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MauiLearn/MauiLearn.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MauiLearn.Smoke/MauiLearn.Smoke.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AppPage xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+         x:Class="MauiLearn.Pages.HomePage"
+         Title="Início">
+
+  <ScrollView>
+    <VerticalStackLayout Padding="32,24" Spacing="20" MaximumWidthRequest="1200">
+
+      <!-- Hero com gradiente e sombra -->
+      <Border Background="{StaticResource HeroBrush}" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="36,32">
+        <Border.Shadow>
+          <Shadow Radius="24" Opacity="0.35" Offset="0,8" Brush="#512BD4" />
+        </Border.Shadow>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24">
+          <VerticalStackLayout Spacing="8">
+            <Label Text="Aprenda .NET MAUI 11 — dentro de um app .NET MAUI" FontSize="32" FontAttributes="Bold" TextColor="White" />
+            <Label TextColor="White" Opacity="0.9" FontSize="16"
+                   Text="Uma biblioteca viva: cada componente tem prévia ao vivo, inspetor com TODAS as propriedades, espião de eventos e código. Aulas guiadas, quiz e desafios para editar o código com Hot Reload." />
+            <HorizontalStackLayout Spacing="10" Margin="0,10,0,0">
+              <Button Text="▶ Começar pela Aula 01" Clicked="OnStartClicked" BackgroundColor="White" TextColor="{StaticResource Primary}" FontAttributes="Bold" />
+              <Button Text="🧩 Explorar componentes" Clicked="OnCatalogClicked" BackgroundColor="#33FFFFFF" TextColor="White" BorderColor="White" BorderWidth="1" />
+            </HorizontalStackLayout>
+          </VerticalStackLayout>
+          <Image x:Name="Logo" Grid.Column="1" Source="maui_logo.png" WidthRequest="140" HeightRequest="140" VerticalOptions="Center">
+            <Image.GestureRecognizers>
+              <TapGestureRecognizer Tapped="OnLogoTapped" />
+            </Image.GestureRecognizers>
+          </Image>
+        </Grid>
+      </Border>
+
+      <!-- Progresso -->
+      <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+        <Border Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="4">
+            <Label Text="📚 Aulas concluídas" Style="{StaticResource Caption}" />
+            <Label x:Name="LessonsStat" FontSize="28" FontAttributes="Bold" />
+            <ProgressBar x:Name="LessonsBar" />
+          </VerticalStackLayout>
+        </Border>
+        <Border Grid.Column="1" Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="4">
+            <Label Text="🏆 Desafios vencidos" Style="{StaticResource Caption}" />
+            <Label x:Name="ChallengesStat" FontSize="28" FontAttributes="Bold" />
+            <ProgressBar x:Name="ChallengesBar" ProgressColor="{StaticResource Magenta}" />
+          </VerticalStackLayout>
+        </Border>
+        <Border Grid.Column="2" Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="4">
+            <Label Text="🧩 Componentes no catálogo" Style="{StaticResource Caption}" />
+            <Label x:Name="ComponentsStat" FontSize="28" FontAttributes="Bold" />
+            <Label Text="com inspetor de propriedades ao vivo" Style="{StaticResource Caption}" />
+          </VerticalStackLayout>
+        </Border>
+      </Grid>
+
+      <!-- Como usar -->
+      <Label Text="Como estudar com o MauiLearn" Style="{StaticResource H2}" />
+      <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="14">
+        <Border Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="6">
+            <Label Text="1️⃣  Aulas" FontAttributes="Bold" FontSize="16" />
+            <Label Text="Leia a teoria, brinque com os exemplos ao vivo e responda o quiz." FontSize="13" />
+          </VerticalStackLayout>
+        </Border>
+        <Border Grid.Column="1" Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="6">
+            <Label Text="2️⃣  Catálogo" FontAttributes="Bold" FontSize="16" />
+            <Label Text="Abra um componente e altere QUALQUER propriedade no inspetor. Veja o XAML gerado." FontSize="13" />
+          </VerticalStackLayout>
+        </Border>
+        <Border Grid.Column="2" Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="6">
+            <Label Text="3️⃣  Desafios" FontAttributes="Bold" FontSize="16" />
+            <Label Text="Edite os XAML de Challenges/Workspaces com o app rodando e verifique." FontSize="13" />
+          </VerticalStackLayout>
+        </Border>
+        <Border Grid.Column="3" Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="6">
+            <Label Text="4️⃣  Código-fonte" FontAttributes="Bold" FontSize="16" />
+            <Label Text="O próprio app é material de estudo: leia os .xaml e .cs — tudo é comentado." FontSize="13" />
+          </VerticalStackLayout>
+        </Border>
+      </Grid>
+
+      <!-- Novidades -->
+      <Label Text="✨ Novidades do .NET MAUI 10 e 11 que você verá aqui" Style="{StaticResource H2}" />
+      <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="6">
+          <Label Text="• XAML Source Generator como padrão (o XAML vira C# no build) — XamlC e Runtime estão obsoletos." />
+          <Label Text="• xmlns global: um único xmlns para MAUI + seus controles, sem clr-namespace." />
+          <Label Text="• XAML C# Expressions (experimental): Text=&quot;{= Nome.ToUpper()}&quot;." />
+          <Label Text="• LongPressGestureRecognizer nativo e badges (BadgeText) em Shell, abas e ToolbarItem." />
+          <Label Text="• Animações com sufixo Async (FadeToAsync, ScaleToAsync…) e DisplayAlertAsync." />
+          <Label Text="• Pickers com IsOpen/Opened/Closed, Date/Time anuláveis, Switch.OffColor, SearchBar.SearchIconColor." />
+          <Label Text="• Obsoletos: ListView, TableView, Cells, Frame, TemplateBinding, Device, Page.IsBusy, MessagingCenter." />
+          <Button Text="Ver a aula de novidades →" Clicked="OnNewsClicked" HorizontalOptions="Start" Style="{StaticResource SecondaryButton}" Margin="0,6,0,0" />
+        </VerticalStackLayout>
+      </Border>
+
+      <TipCard Kind="Desktop" Text="Este projeto é focado em desktop (Windows e macOS/Mac Catalyst). Experimente os atalhos: Ctrl/⌘+1…5 para navegar, Ctrl/⌘+K para buscar, Ctrl/⌘+Shift+N para abrir outra janela, e o botão direito nos exemplos de menu de contexto." />
+    </VerticalStackLayout>
+  </ScrollView>
+</AppPage>

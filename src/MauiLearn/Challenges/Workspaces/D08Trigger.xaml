@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 08 — Botão que só habilita com texto
+  O botão "Enviar" deve ficar DESABILITADO enquanto o e-mail estiver vazio.
+  Use um DataTrigger no Button:
+    <Button.Triggers>
+        <DataTrigger TargetType="Button"
+                     Binding="{Binding Text.Length, Source={x:Reference Email}}"
+                     Value="0">
+            <Setter Property="IsEnabled" Value="False" />
+        </DataTrigger>
+    </Button.Triggers>
+  A verificação apaga o texto e depois digita um e-mail, conferindo IsEnabled.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D08Trigger">
+
+  <VerticalStackLayout Spacing="12" VerticalOptions="Center" WidthRequest="320">
+    <Entry x:Name="Email" Placeholder="seu@email.com" Text="" />
+    <Button x:Name="Enviar" Text="Enviar" />
+  </VerticalStackLayout>
+
+</ContentView>

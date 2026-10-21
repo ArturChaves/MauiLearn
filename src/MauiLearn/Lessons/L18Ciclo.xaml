@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L18Ciclo">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Saber QUANDO cada evento acontece evita bugs clássicos: carregar dados duas vezes, assinar eventos sem desassinar (vazamento), ou acessar o Handler antes de ele existir." />
+
+    <Label Text="1. Window (o ciclo de vida do app)" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="160,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+      <Label Text="Created" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Column="1" Text="A janela nativa foi criada." />
+      <Label Grid.Row="1" Text="Activated" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="1" Grid.Column="1" Text="A janela ganhou foco (desktop: disparado ao clicar nela)." />
+      <Label Grid.Row="2" Text="Deactivated" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="2" Grid.Column="1" Text="A janela perdeu o foco (clique em outro app e volte!)." />
+      <Label Grid.Row="3" Text="Stopped" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="3" Grid.Column="1" Text="A janela não está mais visível (minimizada / app em segundo plano)." />
+      <Label Grid.Row="4" Text="Resumed" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="4" Grid.Column="1" Text="Voltou após Stopped." />
+      <Label Grid.Row="5" Text="Destroying" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="5" Grid.Column="1" Text="A janela vai ser destruída (fechada)." />
+    </Grid>
+
+    <Label Text="2. Page e elementos" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+      <Label Text="NavigatedTo / NavigatedFrom" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Column="1" Text="A navegação para/de esta página terminou (com detalhes da origem)." />
+      <Label Grid.Row="1" Text="Appearing / Disappearing" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="1" Grid.Column="1" Text="A página vai aparecer / sumir. Pode disparar várias vezes." />
+      <Label Grid.Row="2" Text="Loaded / Unloaded" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="2" Grid.Column="1" Text="Qualquer VisualElement: entrou/saiu da árvore visual NATIVA. Melhor lugar para assinar/desassinar eventos externos." />
+      <Label Grid.Row="3" Text="HandlerChanged" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="3" Grid.Column="1" Text="O handler (view nativa) foi criado ou trocado." />
+    </Grid>
+
+    <Label Text="🧪 Log ao vivo" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Os eventos de Window deste app (App.xaml.cs) e os desta demonstração entram no log abaixo. Clique em outra janela e volte, minimize/restaure, ou use os botões:" />
+    <HorizontalStackLayout Spacing="8">
+      <Button Text="Abrir página (Push) e voltar" Clicked="OnPushPage" />
+      <Button x:Name="ToggleButton" Text="Adicionar/remover um elemento" Clicked="OnToggleElement" Style="{StaticResource SecondaryButton}" />
+      <Button Text="Limpar log" Clicked="OnClear" Style="{StaticResource SecondaryButton}" />
+    </HorizontalStackLayout>
+    <ContentView x:Name="ToggleHost" />
+    <Border Style="{StaticResource Card}" Padding="8">
+      <CollectionView x:Name="LogList" HeightRequest="260">
+        <CollectionView.ItemTemplate>
+          <DataTemplate x:DataType="x:String">
+            <Label Text="{Binding .}" Style="{StaticResource Mono}" FontSize="12" Padding="4,2" />
+          </DataTemplate>
+        </CollectionView.ItemTemplate>
+      </CollectionView>
+    </Border>
+
+    <CodeBlock Language="csharp"><![CDATA[
+      // Padrão recomendado: assine no Loaded, desassine no Unloaded
+      public MinhaView()
+      {
+          Loaded += (s, e) => Connectivity.Current.ConnectivityChanged += OnRede;
+          Unloaded += (s, e) => Connectivity.Current.ConnectivityChanged -= OnRede;
+      }
+
+      // Carregar dados: proteja contra Appearing repetido
+      protected override async void OnAppearing()
+      {
+          base.OnAppearing();
+          if (_carregado) return;
+          _carregado = true;
+          await ViewModel.CarregarAsync();
+      }
+    ]]></CodeBlock>
+    <TipCard Kind="Warning">
+      Eventos de objetos de vida longa (serviços, Window, Application) segurando referências a páginas impedem que elas sejam coletadas pelo GC. Sempre desassine — o MAUI tem trabalhado muito em vazamentos de memória, mas o seu código também conta.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

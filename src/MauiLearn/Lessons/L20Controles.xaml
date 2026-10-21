@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L20Controles">
+
+  <ContentView.Resources>
+    <!-- Dois "visuais" para o MESMO controle CardView -->
+    <ControlTemplate x:Key="CardClassico">
+      <Border Padding="14" StrokeShape="RoundRectangle 12" Stroke="{StaticResource Gray300}" x:DataType="CardView"
+              BindingContext="{Binding Source={RelativeSource TemplatedParent}}">
+        <VerticalStackLayout Spacing="6">
+          <HorizontalStackLayout Spacing="8">
+            <Label Text="{Binding Icon}" FontSize="22" />
+            <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" />
+          </HorizontalStackLayout>
+          <BoxView HeightRequest="1" Color="{StaticResource Gray200}" />
+          <ContentPresenter />
+        </VerticalStackLayout>
+      </Border>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="CardDestaque">
+      <Grid ColumnDefinitions="64,*" x:DataType="CardView" BindingContext="{Binding Source={RelativeSource TemplatedParent}}">
+        <Border Background="{StaticResource HeroBrush}" StrokeShape="RoundRectangle 12,0,12,0" StrokeThickness="0">
+          <Label Text="{Binding Icon}" FontSize="30" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Border>
+        <Border Grid.Column="1" Padding="14" StrokeShape="RoundRectangle 0,12,0,12" StrokeThickness="0" BackgroundColor="#22512BD4">
+          <VerticalStackLayout Spacing="4">
+            <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" TextTransform="Uppercase" CharacterSpacing="1" />
+            <ContentPresenter />
+          </VerticalStackLayout>
+        </Border>
+      </Grid>
+    </ControlTemplate>
+  </ContentView.Resources>
+
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Você vai criar controles próprios o tempo todo. Há dois caminhos: compor controles existentes num ContentView (com BindableProperties para configurá-lo) e separar dados de aparência com ControlTemplate." />
+
+    <!-- ===== 1 ===== -->
+    <Label Text="1. BindableProperty: a base de tudo" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Para que uma propriedade aceite Binding, estilos, triggers e animações, ela precisa ser uma BindableProperty. O padrão é sempre o mesmo: um campo estático XxxProperty + uma propriedade CLR que chama GetValue/SetValue." />
+    <CodeBlock Language="csharp" Title="Controls/RatingView.cs (trecho)"><![CDATA[
+      public static readonly BindableProperty RatingProperty = BindableProperty.Create(
+          propertyName: nameof(Rating),
+          returnType: typeof(int),
+          declaringType: typeof(RatingView),
+          defaultValue: 0,
+          defaultBindingMode: BindingMode.TwoWay,
+          coerceValue: (b, v) => Math.Clamp((int)v, 0, ((RatingView)b).Maximum),
+          propertyChanged: (b, antigo, novo) => ((RatingView)b).Render());
+
+      public int Rating
+      {
+          get => (int)GetValue(RatingProperty);     // NUNCA coloque lógica aqui:
+          set => SetValue(RatingProperty, value);   // bindings chamam SetValue direto!
+      }
+    ]]></CodeBlock>
+    <TipCard Kind="Warning">
+      Não coloque lógica no getter/setter da propriedade CLR: o XAML e os bindings chamam SetValue diretamente, pulando o setter. Use propertyChanged, coerceValue e validateValue.
+    </TipCard>
+
+    <Label Text="🧪 O RatingView em ação (TwoWay com o Slider)" Style="{StaticResource H3}" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="10">
+        <RatingView x:Name="Rating" Rating="3" Maximum="5" RatingChanged="OnRatingChanged" />
+        <HorizontalStackLayout Spacing="10">
+          <Label Text="Rating (Slider TwoWay):" VerticalOptions="Center" />
+          <Slider Maximum="10" WidthRequest="200" Value="{Binding Rating, Source={x:Reference Rating}, Mode=TwoWay, x:DataType=RatingView}" />
+          <Label Text="Maximum:" VerticalOptions="Center" />
+          <Stepper Maximum="10" Minimum="1" Value="{Binding Maximum, Source={x:Reference Rating}, Mode=TwoWay, x:DataType=RatingView}" />
+        </HorizontalStackLayout>
+        <Label x:Name="RatingLog" Style="{StaticResource Caption}" Text="Clique nas estrelas ou arraste o slider (coerceValue limita ao Maximum)." />
+      </VerticalStackLayout>
+    </Border>
+    <CodeBlock Language="xaml"><![CDATA[
+      <RatingView x:Name="Rating" Rating="3" Maximum="5" StarColor="Gold" RatingChanged="OnRatingChanged" />
+      <Slider Value="{Binding Rating, Source={x:Reference Rating}, Mode=TwoWay}" Maximum="10" />
+    ]]></CodeBlock>
+    <TipCard Kind="Tip">
+      O RatingView também aparece no Inspetor de Propriedades? Não está no catálogo — mas qualquer BindableObject pode ser inspecionado. Experimente adicionar uma entrada no Catalog/ComponentCatalog.*.cs para ele como exercício!
+    </TipCard>
+
+    <!-- ===== 2 ===== -->
+    <Label Text="2. ControlTemplate: troque a aparência sem trocar o controle" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="O CardView só tem Title e Icon. A aparência vem de um ControlTemplate; o conteúdo do card aparece no ContentPresenter. Troque o template ao vivo:" />
+    <HorizontalStackLayout Spacing="8">
+      <Button Text="Template clássico" Clicked="OnClassic" />
+      <Button Text="Template destaque" Clicked="OnHighlight" Style="{StaticResource SecondaryButton}" />
+    </HorizontalStackLayout>
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <CardView x:Name="Card1" Title="Dica do dia" Icon="💡" ControlTemplate="{StaticResource CardClassico}">
+        <Label Text="Use Grid em vez de StackLayouts aninhados." />
+      </CardView>
+      <CardView x:Name="Card2" Grid.Column="1" Title="Novidade" Icon="✨" ControlTemplate="{StaticResource CardClassico}">
+        <Label Text="LongPressGestureRecognizer chegou no .NET MAUI 11!" />
+      </CardView>
+    </Grid>
+    <CodeBlock Language="xaml"><![CDATA[
+      <ControlTemplate x:Key="CardClassico">
+          <!-- O BindingContext do template aponta para o controle (TemplatedParent) -->
+          <Border x:DataType="CardView"
+                  BindingContext="{Binding Source={RelativeSource TemplatedParent}}">
+              <VerticalStackLayout>
+                  <Label Text="{Binding Title}" FontAttributes="Bold" />
+                  <ContentPresenter />   <!-- aqui entra o conteúdo do CardView -->
+              </VerticalStackLayout>
+          </Border>
+      </ControlTemplate>
+
+      <CardView Title="Dica do dia" ControlTemplate="{StaticResource CardClassico}">
+          <Label Text="Use Grid em vez de StackLayouts aninhados." />
+      </CardView>
+    ]]></CodeBlock>
+    <TipCard Kind="New">
+      {TemplateBinding Title} está obsoleto no .NET MAUI 10+. Use {Binding Title, Source={RelativeSource TemplatedParent}} — ou, como aqui, defina o BindingContext da raiz do template como TemplatedParent e use bindings simples (compiláveis com x:DataType).
+    </TipCard>
+
+    <!-- ===== 3 ===== -->
+    <Label Text="3. ContentView com XAML" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Quando o controle tem muita UI, crie um ContentView com XAML + code-behind. Os controles CodeBlock (este bloco de código!) e TipCard do app são exemplos: abra Controls/CodeBlock.xaml e Controls/TipCard.cs." />
+    <TipCard Kind="Nuance">
+      Dentro do XAML do próprio controle, faça binding nas SUAS propriedades com x:Name na raiz: Text="{Binding Title, Source={x:Reference root}}". Evite definir BindingContext = this, pois isso quebra bindings de quem USA o controle.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

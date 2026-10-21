@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L13Gestos">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Qualquer View pode receber gestos adicionando reconhecedores em GestureRecognizers. No desktop, o mouse e o trackpad disparam os mesmos reconhecedores que o toque — com extras como botão direito e hover." />
+
+    <Label Text="🧪 O cartão que faz tudo" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="O cartão abaixo combina 6 reconhecedores. Experimente: arrastar, duplo clique, botão direito, pressionar e segurar, e só passar o mouse." />
+
+    <Grid ColumnDefinitions="*,320" ColumnSpacing="16">
+      <Border Style="{StaticResource DemoArea}" HeightRequest="320" Padding="0">
+        <Grid x:Name="Arena">
+          <Border x:Name="Card" WidthRequest="170" HeightRequest="110" StrokeShape="RoundRectangle 16"
+                  BackgroundColor="#512BD4" StrokeThickness="0">
+            <Border.Shadow>
+              <Shadow Radius="12" Opacity="0.3" Offset="0,4" />
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+              <PanGestureRecognizer PanUpdated="OnPan" />
+              <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="OnDoubleTap" />
+              <TapGestureRecognizer Buttons="Secondary" Tapped="OnRightClick" />
+              <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" PointerMoved="OnPointerMoved" />
+              <LongPressGestureRecognizer MinimumPressDuration="700" LongPressed="OnLongPressed" />
+            </Border.GestureRecognizers>
+            <FlyoutBase.ContextFlyout>
+              <MenuFlyout>
+                <MenuFlyoutItem Text="Roxo" Clicked="OnColorMenu" CommandParameter="#512BD4" />
+                <MenuFlyoutItem Text="Rosa" Clicked="OnColorMenu" CommandParameter="#D600AA" />
+                <MenuFlyoutItem Text="Verde" Clicked="OnColorMenu" CommandParameter="#2E9D5B" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Text="Centralizar" Clicked="OnDoubleTap" />
+              </MenuFlyout>
+            </FlyoutBase.ContextFlyout>
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+              <Label Text="✋ Me use!" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center" />
+              <Label x:Name="CardInfo" Text="arraste · 2x clique · botão direito" TextColor="White" FontSize="11" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+          </Border>
+        </Grid>
+      </Border>
+      <Border Grid.Column="1" Style="{StaticResource Card}" Padding="8">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="Log de gestos" FontAttributes="Bold" />
+          <VerticalStackLayout x:Name="Log" Spacing="2" />
+        </VerticalStackLayout>
+      </Border>
+    </Grid>
+
+    <CodeBlock Language="xaml"><![CDATA[
+      <Border x:Name="Card">
+          <Border.GestureRecognizers>
+              <PanGestureRecognizer PanUpdated="OnPan" />
+              <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="OnDoubleTap" />
+              <TapGestureRecognizer Buttons="Secondary" Tapped="OnRightClick" />
+              <PointerGestureRecognizer PointerEntered="OnEnter" PointerExited="OnExit" />
+              <LongPressGestureRecognizer MinimumPressDuration="700" LongPressed="OnLongPressed" />
+          </Border.GestureRecognizers>
+          <FlyoutBase.ContextFlyout>
+              <MenuFlyout>
+                  <MenuFlyoutItem Text="Roxo" Clicked="OnColorMenu" />
+              </MenuFlyout>
+          </FlyoutBase.ContextFlyout>
+      </Border>
+    ]]></CodeBlock>
+    <CodeBlock Language="csharp"><![CDATA[
+      private double _startX, _startY;
+
+      private void OnPan(object? sender, PanUpdatedEventArgs e)
+      {
+          switch (e.StatusType)
+          {
+              case GestureStatus.Started:
+                  _startX = Card.TranslationX; _startY = Card.TranslationY;   // guarda o início
+                  break;
+              case GestureStatus.Running:
+                  Card.TranslationX = _startX + e.TotalX;                     // TotalX é acumulado
+                  Card.TranslationY = _startY + e.TotalY;
+                  break;
+          }
+      }
+    ]]></CodeBlock>
+
+    <Label Text="Resumo dos reconhecedores" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="260,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+      <Label Text="TapGestureRecognizer" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Column="1" Text="Clique/toque, duplo clique (NumberOfTapsRequired) e botão direito (Buttons=Secondary)." />
+      <Label Grid.Row="1" Text="PointerGestureRecognizer" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="1" Grid.Column="1" Text="Hover: Entered/Exited/Moved, Pressed/Released." />
+      <Label Grid.Row="2" Text="PanGestureRecognizer" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="2" Grid.Column="1" Text="Arrastar com TotalX/TotalY." />
+      <Label Grid.Row="3" Text="LongPressGestureRecognizer ✨" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="3" Grid.Column="1" Text="Pressionar e segurar (novo no .NET MAUI 11)." />
+      <Label Grid.Row="4" Text="PinchGestureRecognizer" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="4" Grid.Column="1" Text="Pinça/zoom (trackpad no Mac, touch no Windows)." />
+      <Label Grid.Row="5" Text="SwipeGestureRecognizer" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="5" Grid.Column="1" Text="Deslize rápido numa direção." />
+      <Label Grid.Row="6" Text="Drag / DropGestureRecognizer" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="6" Grid.Column="1" Text="Arrastar e soltar dados (inclusive de outros apps)." />
+    </Grid>
+
+    <TipCard Kind="Nuance">
+      Quando vários reconhecedores competem (ex.: Tap simples e duplo no mesmo elemento), o simples dispara também no duplo clique. Escolha um, ou trate a lógica com cuidado.
+    </TipCard>
+    <TipCard Kind="Desktop">
+      Teclado: o MAUI não tem um evento global de tecla multiplataforma. Para atalhos, use KeyboardAccelerator em itens de menu (Aula 16). Para texto, use Entry/Editor. Para algo além, acesse o controle nativo via Handler (Aula 17).
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L14Animacoes">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Toda VisualElement pode ser animada com métodos de extensão que retornam Task — então você usa await para encadear e Task.WhenAll para rodar em paralelo." />
+    <TipCard Kind="New">
+      No .NET MAUI 10+, os métodos ganharam o sufixo Async: TranslateToAsync, ScaleToAsync, RotateToAsync, FadeToAsync... Os nomes antigos (TranslateTo, FadeTo...) estão obsoletos. As novas versões também aceitam CancellationToken.
+    </TipCard>
+
+    <Label Text="🧪 Laboratório de animações" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="260,*" ColumnSpacing="16">
+      <VerticalStackLayout Spacing="8">
+        <Label Text="Easing" FontSize="13" />
+        <Picker x:Name="EasingPicker" />
+        <Label Text="Duração (ms)" FontSize="13" />
+        <Slider x:Name="DurationSlider" Maximum="3000" Minimum="100" Value="600" />
+        <Label Text="{Binding Value, Source={x:Reference DurationSlider}, StringFormat='{0:F0} ms', x:DataType=Slider}" Style="{StaticResource Caption}" />
+        <FlexLayout Wrap="Wrap">
+          <Button Text="TranslateToAsync" Clicked="OnTranslate" Margin="0,0,6,6" />
+          <Button Text="ScaleToAsync" Clicked="OnScale" Margin="0,0,6,6" />
+          <Button Text="RotateToAsync" Clicked="OnRotate" Margin="0,0,6,6" />
+          <Button Text="FadeToAsync" Clicked="OnFade" Margin="0,0,6,6" />
+          <Button Text="Sequência (await)" Clicked="OnSequence" Margin="0,0,6,6" />
+          <Button Text="Paralelo (WhenAll)" Clicked="OnParallel" Margin="0,0,6,6" />
+          <Button Text="Animation (cor)" Clicked="OnColorAnimation" Margin="0,0,6,6" />
+          <Button x:Name="PulseButton" Text="▶ Pulsar (loop)" Clicked="OnPulse" Margin="0,0,6,6" />
+          <Button Text="⏹ CancelAnimations" Clicked="OnCancel" Margin="0,0,6,6" Style="{StaticResource SecondaryButton}" />
+          <Button Text="↺ Resetar" Clicked="OnReset" Margin="0,0,6,6" Style="{StaticResource SecondaryButton}" />
+        </FlexLayout>
+      </VerticalStackLayout>
+      <Border Grid.Column="1" Style="{StaticResource DemoArea}" HeightRequest="340">
+        <Grid>
+          <Border x:Name="Target" WidthRequest="110" HeightRequest="110" StrokeShape="RoundRectangle 20"
+                  BackgroundColor="#512BD4" StrokeThickness="0">
+            <Label Text="MAUI" TextColor="White" FontAttributes="Bold" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center" />
+          </Border>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <Label Text="O código" Style="{StaticResource H2}" />
+    <CodeBlock Language="csharp"><![CDATA[
+      // Simples
+      await box.TranslateToAsync(100, 0, 600, Easing.CubicInOut);
+      await box.FadeToAsync(0.2, 400);
+
+      // Sequência: um depois do outro
+      await box.ScaleToAsync(1.5, 300);
+      await box.RotateToAsync(180, 300);
+      await box.ScaleToAsync(1, 300);
+
+      // Paralelo
+      await Task.WhenAll(
+          box.RotateToAsync(360, 800),
+          box.ScaleToAsync(1.4, 400),
+          box.FadeToAsync(0.6, 800));
+
+      // Animation: anima QUALQUER valor via callback (aqui, a cor)
+      var anim = new Animation(v => box.BackgroundColor = Color.FromHsla(v, 0.7, 0.5), 0, 1);
+      anim.Commit(box, "Arcoiris", length: 2000, easing: Easing.Linear,
+                  repeat: () => _pulsando);   // repete enquanto retornar true
+
+      box.CancelAnimations();   // para tudo
+    ]]></CodeBlock>
+
+    <Label Text="Animações compostas (Animation com filhos)" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="A classe Animation permite montar uma 'timeline': cada filho roda numa faixa [início, fim] entre 0 e 1 da duração total." />
+    <CodeBlock Language="csharp"><![CDATA[
+      var pai = new Animation
+      {
+          { 0.0, 0.5, new Animation(v => box.Scale = v, 1, 2) },        // primeira metade
+          { 0.5, 1.0, new Animation(v => box.Scale = v, 2, 1) },        // segunda metade
+          { 0.0, 1.0, new Animation(v => box.Rotation = v, 0, 360) },   // o tempo todo
+      };
+      pai.Commit(box, "Composta", length: 1200);
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <Button Text="Rodar animação composta no quadrado acima" Clicked="OnComposite" HorizontalOptions="Start" />
+    </Border>
+
+    <TipCard Kind="Nuance">
+      TranslationX/Y, Scale e Rotation não afetam o layout: o elemento é desenhado deslocado, mas o espaço que ocupa no pai continua o mesmo. Para mudar o layout, altere Margin/WidthRequest (mais caro).
+    </TipCard>
+    <TipCard Kind="Tip">
+      Easing muda a "sensação": Linear (constante), CubicInOut (suave), SpringOut (com mola), BounceOut (quica). Experimente com o mesmo movimento!
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

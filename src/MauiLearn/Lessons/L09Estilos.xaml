@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L09Estilos">
+
+  <!-- Recursos locais: visíveis só dentro desta aula -->
+  <ContentView.Resources>
+    <Color x:Key="CorDinamica">#512BD4</Color>
+
+    <Style x:Key="BotaoBase" TargetType="Button">
+      <Setter Property="CornerRadius" Value="20" />
+      <Setter Property="FontAttributes" Value="Bold" />
+      <Setter Property="Padding" Value="18,8" />
+    </Style>
+    <!-- BasedOn: herda os setters de BotaoBase e acrescenta/sobrescreve -->
+    <Style x:Key="BotaoPerigo" TargetType="Button" BasedOn="{StaticResource BotaoBase}">
+      <Setter Property="BackgroundColor" Value="{StaticResource Danger}" />
+    </Style>
+    <Style x:Key="BotaoSucesso" TargetType="Button" BasedOn="{StaticResource BotaoBase}">
+      <Setter Property="BackgroundColor" Value="{StaticResource Success}" />
+    </Style>
+  </ContentView.Resources>
+
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Recursos são objetos reutilizáveis guardados em um ResourceDictionary (cores, tamanhos, estilos, templates, converters). Estilos agrupam Setters de propriedades. Juntos, dão consistência visual e facilitam temas." />
+
+    <!-- ===== 1 ===== -->
+    <Label Text="1. Onde ficam os recursos (escopo)" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="A busca sobe a árvore: elemento → pais → página → Application.Resources. O primeiro que tiver a chave vence. Neste app: Resources/Styles/Colors.xaml e Styles.xaml são mesclados em App.xaml." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <!-- App.xaml -->
+      <Application.Resources>
+          <ResourceDictionary>
+              <ResourceDictionary.MergedDictionaries>
+                  <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                  <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+              </ResourceDictionary.MergedDictionaries>
+          </ResourceDictionary>
+      </Application.Resources>
+    ]]></CodeBlock>
+
+    <!-- ===== 2 ===== -->
+    <Label Text="2. StaticResource × DynamicResource" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="StaticResource resolve o valor UMA vez, ao criar o elemento. DynamicResource mantém uma ligação: se o recurso for substituído, o elemento atualiza. Clique nas cores e compare:" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="10">
+        <HorizontalStackLayout Spacing="8">
+          <Button Text="Roxo" BackgroundColor="#512BD4" Clicked="OnColorClicked" CommandParameter="#512BD4" />
+          <Button Text="Rosa" BackgroundColor="#D600AA" Clicked="OnColorClicked" CommandParameter="#D600AA" />
+          <Button Text="Verde" BackgroundColor="#2E9D5B" Clicked="OnColorClicked" CommandParameter="#2E9D5B" />
+          <Button Text="Laranja" BackgroundColor="#E59A12" Clicked="OnColorClicked" CommandParameter="#E59A12" />
+        </HorizontalStackLayout>
+        <Label Text="Eu uso StaticResource CorDinamica (não mudo)" TextColor="{StaticResource CorDinamica}" FontSize="18" FontAttributes="Bold" />
+        <Label Text="Eu uso DynamicResource CorDinamica (mudo!)" TextColor="{DynamicResource CorDinamica}" FontSize="18" FontAttributes="Bold" />
+      </VerticalStackLayout>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      // Substituir o recurso dispara a atualização de quem usa DynamicResource:
+      Resources["CorDinamica"] = Color.FromArgb("#D600AA");
+    ]]></CodeBlock>
+
+    <!-- ===== 3 ===== -->
+    <Label Text="3. Estilo implícito, explícito e BasedOn" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <CodeBlock Language="xaml"><![CDATA[
+        <!-- Implícito: sem x:Key, vale para TODOS os Buttons do escopo -->
+        <Style TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#512BD4" />
+        </Style>
+
+        <!-- Explícito: com x:Key, aplicado sob demanda -->
+        <Style x:Key="BotaoBase" TargetType="Button">
+            <Setter Property="CornerRadius" Value="20" />
+        </Style>
+
+        <!-- Herança de estilos -->
+        <Style x:Key="BotaoPerigo" TargetType="Button"
+               BasedOn="{StaticResource BotaoBase}">
+            <Setter Property="BackgroundColor" Value="Red" />
+        </Style>
+      ]]></CodeBlock>
+      <Border Grid.Column="1" Style="{StaticResource DemoArea}">
+        <VerticalStackLayout Spacing="10">
+          <Button Text="Sem Style (implícito do app)" />
+          <Button Text="Style=BotaoBase" Style="{StaticResource BotaoBase}" />
+          <Button Text="Style=BotaoPerigo (BasedOn)" Style="{StaticResource BotaoPerigo}" />
+          <Button Text="Style=BotaoSucesso (BasedOn)" Style="{StaticResource BotaoSucesso}" />
+          <Button Text="BotaoPerigo + valor local" Style="{StaticResource BotaoPerigo}" BackgroundColor="Black" />
+        </VerticalStackLayout>
+      </Border>
+    </Grid>
+    <TipCard Kind="Nuance">
+      Precedência (do mais forte ao mais fraco): valor de animação/trigger ativo → valor LOCAL (atributo direto) → Style explícito → Style implícito → valor padrão da BindableProperty. Por isso o último botão é preto mesmo com BotaoPerigo.
+    </TipCard>
+    <TipCard Kind="Warning">
+      Um Style explícito SUBSTITUI o implícito (não soma). Se quiser os dois, faça o explícito BasedOn um estilo base com x:Key — estilos implícitos não podem ser referenciados por BasedOn diretamente, a menos que também tenham chave.
+    </TipCard>
+
+    <!-- ===== 4 ===== -->
+    <Label Text="4. StyleClass: vários estilos combinados" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Style TargetType="Label" Class="destaque">
+          <Setter Property="TextColor" Value="#D600AA" />
+      </Style>
+      <Style TargetType="Label" Class="grande">
+          <Setter Property="FontSize" Value="24" />
+      </Style>
+
+      <Label Text="Destaque + grande" StyleClass="destaque,grande" />
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout>
+        <Label Text="Só destaque" StyleClass="destaque" />
+        <Label Text="Só grande" StyleClass="grande" />
+        <Label Text="Destaque + grande" StyleClass="destaque,grande" />
+      </VerticalStackLayout>
+    </Border>
+
+    <!-- ===== 5 ===== -->
+    <Label Text="5. Temas claro/escuro" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="AppThemeBinding escolhe um valor por tema. Application.UserAppTheme força um tema (ou Unspecified para seguir o sistema). Todo o app reage na hora:" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="10">
+        <HorizontalStackLayout Spacing="8">
+          <Button Text="☀️ Claro" Clicked="OnThemeLight" />
+          <Button Text="🌙 Escuro" Clicked="OnThemeDark" />
+          <Button Text="🖥️ Sistema" Clicked="OnThemeSystem" Style="{StaticResource SecondaryButton}" />
+        </HorizontalStackLayout>
+        <Border Padding="16" StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light=#FFF8E1, Dark=#263238}">
+          <Label Text="{AppThemeBinding Light='Fundo creme no tema claro', Dark='Fundo azul-ardósia no tema escuro'}"
+                 TextColor="{AppThemeBinding Light=#5D4037, Dark=#ECEFF1}" FontSize="18" />
+        </Border>
+      </VerticalStackLayout>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      Application.Current!.UserAppTheme = AppTheme.Dark;      // força escuro
+      Application.Current!.RequestedThemeChanged += (s, e) => Debug.WriteLine(e.RequestedTheme);
+
+      // Em C#, o equivalente ao AppThemeBinding:
+      label.SetAppThemeColor(Label.TextColorProperty, Colors.Black, Colors.White);
+    ]]></CodeBlock>
+
+    <!-- ===== 6 ===== -->
+    <Label Text="6. Estilos por plataforma e dispositivo" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Style TargetType="Label" x:Key="Mono">
+          <Setter Property="FontFamily" Value="{OnPlatform WinUI='Consolas', MacCatalyst='Menlo'}" />
+          <Setter Property="FontSize" Value="{OnIdiom Desktop=13, Phone=12}" />
+      </Style>
+    ]]></CodeBlock>
+    <TipCard Kind="Tip">
+      Abra Resources/Styles/Styles.xaml e mude a cor "Primary" em Colors.xaml com o app rodando: o Hot Reload aplica a nova cor em todo o app.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

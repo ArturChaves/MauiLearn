@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L11Colecoes">
+
+  <ContentView.Resources>
+    <!-- Dois templates + um DataTemplateSelector que escolhe entre eles por item -->
+    <DataTemplate x:Key="CheapTemplate" x:DataType="Fruit">
+      <Border Style="{StaticResource Card}" Padding="10">
+        <HorizontalStackLayout Spacing="10">
+          <Label Text="{Binding Emoji}" FontSize="28" />
+          <VerticalStackLayout>
+            <Label Text="{Binding Name}" FontAttributes="Bold" />
+            <Label Text="{Binding PriceText}" FontSize="12" TextColor="{StaticResource Success}" />
+          </VerticalStackLayout>
+        </HorizontalStackLayout>
+      </Border>
+    </DataTemplate>
+    <DataTemplate x:Key="ExpensiveTemplate" x:DataType="Fruit">
+      <Border Padding="10" StrokeThickness="2" Stroke="{StaticResource Warning}" StrokeShape="RoundRectangle 12" BackgroundColor="#22E59A12">
+        <HorizontalStackLayout Spacing="10">
+          <Label Text="{Binding Emoji}" FontSize="28" />
+          <VerticalStackLayout>
+            <Label Text="{Binding Name, StringFormat='💎 {0}'}" FontAttributes="Bold" />
+            <Label Text="{Binding PriceText, StringFormat='{0} (premium)'}" FontSize="12" TextColor="{StaticResource Warning}" />
+          </VerticalStackLayout>
+        </HorizontalStackLayout>
+      </Border>
+    </DataTemplate>
+    <FruitTemplateSelector x:Key="FruitSelector"
+                           Cheap="{StaticResource CheapTemplate}"
+                           Expensive="{StaticResource ExpensiveTemplate}" />
+  </ContentView.Resources>
+
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="CollectionView exibe coleções de qualquer tamanho com VIRTUALIZAÇÃO: só cria as views dos itens visíveis e as recicla ao rolar. Você fornece os dados (ItemsSource) e a aparência de UM item (ItemTemplate)." />
+
+    <!-- ===== 1 ===== -->
+    <Label Text="1. O básico + laboratório" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <CollectionView ItemsSource="{Binding Frutas}"
+                      ItemsLayout="VerticalGrid, 2"
+                      SelectionMode="Single"
+                      SelectionChanged="OnSelecionou"
+                      EmptyView="Nenhuma fruta">
+          <CollectionView.ItemTemplate>
+              <DataTemplate x:DataType="models:Fruta">
+                  <Label Text="{Binding Nome}" />
+              </DataTemplate>
+          </CollectionView.ItemTemplate>
+      </CollectionView>
+    ]]></CodeBlock>
+
+    <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10">
+      <Picker x:Name="LayoutPicker" Title="ItemsLayout" WidthRequest="200" SelectedIndexChanged="OnLayoutChanged" />
+      <Picker x:Name="SelectionPicker" Grid.Column="1" Title="SelectionMode" WidthRequest="160" SelectedIndexChanged="OnSelectionModeChanged" />
+      <HorizontalStackLayout Grid.Column="2" Spacing="6">
+        <Button Text="+ Item" Clicked="OnAdd" />
+        <Button Text="− Item" Clicked="OnRemove" Style="{StaticResource SecondaryButton}" />
+        <Button Text="Limpar" Clicked="OnClear" Style="{StaticResource SecondaryButton}" />
+        <Button Text="ScrollTo(último)" Clicked="OnScrollLast" Style="{StaticResource SecondaryButton}" />
+      </HorizontalStackLayout>
+    </Grid>
+    <Label x:Name="SelectionLabel" Style="{StaticResource Caption}" Text="Selecione um item…" />
+
+    <Border Style="{StaticResource DemoArea}" Padding="8">
+      <!-- Altura limitada: essencial para a virtualização funcionar -->
+      <CollectionView x:Name="Fruits" HeightRequest="300"
+                      ItemTemplate="{StaticResource FruitSelector}"
+                      SelectionChanged="OnSelectionChanged">
+        <CollectionView.EmptyView>
+          <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="30">
+            <Label Text="🧺" FontSize="40" HorizontalOptions="Center" />
+            <Label Text="EmptyView: a cesta está vazia" HorizontalOptions="Center" />
+          </VerticalStackLayout>
+        </CollectionView.EmptyView>
+      </CollectionView>
+    </Border>
+    <TipCard Kind="Nuance">
+      Itens acima de R$ 7 usam outro template — isso é um DataTemplateSelector (veja Lessons/FruitTemplateSelector.cs). Útil para mensagens de chat (minhas × dos outros), cabeçalhos especiais etc.
+    </TipCard>
+
+    <!-- ===== 2 ===== -->
+    <Label Text="2. DataTemplateSelector" Style="{StaticResource H2}" />
+    <CodeBlock Language="csharp"><![CDATA[
+      public class FruitTemplateSelector : DataTemplateSelector
+      {
+          public DataTemplate? Cheap { get; set; }
+          public DataTemplate? Expensive { get; set; }
+
+          protected override DataTemplate OnSelectTemplate(object item, BindableObject container) =>
+              item is Fruit { Price: > 7 } ? Expensive! : Cheap!;
+      }
+    ]]></CodeBlock>
+
+    <!-- ===== 3 ===== -->
+    <Label Text="3. Agrupamento" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Com IsGrouped=True, ItemsSource deve ser uma coleção de GRUPOS — e cada grupo é ele próprio uma coleção (ex.: uma classe que herda de List&lt;T&gt; com propriedades extras para o cabeçalho)." />
+    <CodeBlock Language="csharp"><![CDATA[
+      public class FrutaGrupo(string nome, IEnumerable<Fruta> itens) : List<Fruta>(itens)
+      {
+          public string Nome { get; } = nome;
+      }
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}" Padding="8">
+      <CollectionView x:Name="Grouped" IsGrouped="True" HeightRequest="260">
+        <CollectionView.GroupHeaderTemplate>
+          <DataTemplate x:DataType="FruitGroup">
+            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="15" Padding="4,10,4,4"
+                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+          </DataTemplate>
+        </CollectionView.GroupHeaderTemplate>
+        <CollectionView.GroupFooterTemplate>
+          <DataTemplate x:DataType="FruitGroup">
+            <Label Text="{Binding Count, StringFormat='{0} item(ns)'}" Style="{StaticResource Caption}" Padding="4,0,4,8" />
+          </DataTemplate>
+        </CollectionView.GroupFooterTemplate>
+        <CollectionView.ItemTemplate>
+          <DataTemplate x:DataType="Fruit">
+            <Label Text="{Binding Name, StringFormat='  • {0}'}" Padding="4,2" />
+          </DataTemplate>
+        </CollectionView.ItemTemplate>
+      </CollectionView>
+    </Border>
+
+    <!-- ===== 4 ===== -->
+    <Label Text="4. Rolagem infinita" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <CollectionView ItemsSource="{Binding Itens}"
+                      RemainingItemsThreshold="5"
+                      RemainingItemsThresholdReachedCommand="{Binding CarregarMaisCommand}" />
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}" Padding="8">
+      <VerticalStackLayout Spacing="4">
+        <Label x:Name="InfiniteLabel" Style="{StaticResource Caption}" />
+        <CollectionView x:Name="Infinite" HeightRequest="200" RemainingItemsThreshold="5"
+                        RemainingItemsThresholdReached="OnLoadMore">
+          <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="x:String">
+              <Label Text="{Binding .}" Padding="6,4" />
+            </DataTemplate>
+          </CollectionView.ItemTemplate>
+        </CollectionView>
+      </VerticalStackLayout>
+    </Border>
+
+    <!-- ===== 5 ===== -->
+    <Label Text="5. Quando NÃO usar CollectionView" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Para poucos itens (até ~20) dentro de um layout que já rola, use BindableLayout num StackLayout/FlexLayout: não há virtualização, mas também não há rolagem própria nem restrições de altura." />
+    <TipCard Kind="Warning">
+      Nunca coloque CollectionView dentro de ScrollView ou VerticalStackLayout. Use um Grid com RowDefinitions="Auto,*" e coloque a lista na linha '*'.
+    </TipCard>
+    <TipCard Kind="Desktop">
+      No desktop, a seleção funciona com clique e o estado visual PointerOver dá feedback de hover nos itens. Combine com FlyoutBase.ContextFlyout no template para um menu de botão direito por item.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

@@ -1,0 +1,2 @@
+Este texto foi lido de Resources/Raw/sobre.txt usando FileSystem.OpenAppPackageFileAsync.
+Arquivos em Resources/Raw são empacotados como estão (MauiAsset).

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 02 — Botão estiloso
+  Transforme o botão abaixo num botão "Salvar" verde e arredondado:
+    1. Text="Salvar"
+    2. BackgroundColor="#2E9D5B"
+    3. CornerRadius="20"
+    4. Padding com pelo menos 24 na horizontal (ex.: Padding="24,10")
+  Dica: o estilo implícito do app (Styles.xaml) já define algumas dessas propriedades — o valor LOCAL vence.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D02BotaoEstiloso">
+
+  <Button x:Name="Botao"
+          Text="Botão"
+          HorizontalOptions="Center"
+          VerticalOptions="Center" />
+
+</ContentView>

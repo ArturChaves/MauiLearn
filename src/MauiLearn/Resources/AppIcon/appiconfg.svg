@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Livro aberto estilizado -->
+  <path d="M88 132 Q168 108 228 148 L228 336 Q168 300 88 320 Z" fill="#FFFFFF"/>
+  <path d="M368 132 Q288 108 228 148 L228 336 Q288 300 368 320 Z" fill="#E0D7FF"/>
+  <text x="228" y="250" font-family="Arial" font-weight="bold" font-size="64" fill="#512BD4" text-anchor="middle">M</text>
+</svg>

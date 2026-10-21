@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Hospeda um desafio: instruções + verificações à esquerda, área de trabalho ao vivo à direita.
+  A área de trabalho é um ContentView definido em Challenges/Workspaces/*.xaml — é ESSE arquivo
+  que você edita com o app rodando (Hot Reload).
+-->
+<AppPage xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+         x:Class="MauiLearn.Pages.ChallengeHostPage"
+         Title="Desafio">
+
+  <Grid ColumnDefinitions="420,*">
+    <!-- Instruções -->
+    <ScrollView>
+      <VerticalStackLayout Padding="24,20" Spacing="10">
+        <Label x:Name="NumberLabel" Style="{StaticResource ChipLabel}" />
+        <Label x:Name="TitleLabel" Style="{StaticResource H1}" FontSize="26" />
+        <Label x:Name="GoalLabel" Style="{StaticResource Body}" />
+
+        <Border Style="{StaticResource Card}" Padding="12">
+          <VerticalStackLayout Spacing="6">
+            <Label Text="📂 Arquivo para editar" FontAttributes="Bold" />
+            <Label x:Name="FileLabel" Style="{StaticResource Mono}" LineBreakMode="CharacterWrap" />
+            <Button Text="Copiar caminho" Clicked="OnCopyPath" Style="{StaticResource SecondaryButton}" HorizontalOptions="Start" />
+          </VerticalStackLayout>
+        </Border>
+
+        <Label Text="Passos" Style="{StaticResource H3}" />
+        <VerticalStackLayout x:Name="StepsHost" Spacing="6" />
+
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,8,0,0">
+          <Button Text="✔ Verificar" Clicked="OnVerify" />
+          <Button Grid.Column="1" Text="↻ Recarregar área" Clicked="OnReload" Style="{StaticResource SecondaryButton}"
+                  ToolTipProperties.Text="Recria a área de trabalho (útil após mudanças em C#/code-behind)" />
+        </Grid>
+        <VerticalStackLayout x:Name="ResultsHost" Spacing="4" />
+        <Label x:Name="SuccessLabel" IsVisible="False" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Success}"
+               Text="🎉 Desafio concluído! Excelente trabalho." />
+
+        <Label Text="Dicas" Style="{StaticResource H3}" />
+        <VerticalStackLayout x:Name="HintsHost" Spacing="6" />
+        <Button x:Name="HintButton" Text="💡 Mostrar próxima dica" Clicked="OnHint" Style="{StaticResource SecondaryButton}" HorizontalOptions="Start" />
+
+        <Button x:Name="SolutionButton" Text="👀 Mostrar solução" Clicked="OnSolution" Style="{StaticResource SecondaryButton}" HorizontalOptions="Start" />
+        <CodeBlock x:Name="SolutionBlock" IsVisible="False" Title="Solução (XAML)" Language="xaml" />
+        <Button x:Name="LessonButton" Text="🎓 Revisar a aula relacionada" Clicked="OnLesson" Style="{StaticResource SecondaryButton}" HorizontalOptions="Start" />
+      </VerticalStackLayout>
+    </ScrollView>
+
+    <!-- Área de trabalho -->
+    <Border Grid.Column="1" Margin="0,16,16,16" Style="{StaticResource DemoArea}" Padding="0">
+      <Grid RowDefinitions="Auto,*">
+        <Grid ColumnDefinitions="*,Auto" Padding="14,8">
+          <Label Text="● ÁREA DE TRABALHO (Hot Reload)" Style="{StaticResource ChipLabel}" TextColor="{StaticResource Danger}" />
+          <Label x:Name="ReloadedLabel" Grid.Column="1" Style="{StaticResource Caption}" />
+        </Grid>
+        <ContentView x:Name="WorkspaceHost" Grid.Row="1" Padding="16" />
+      </Grid>
+    </Border>
+  </Grid>
+</AppPage>

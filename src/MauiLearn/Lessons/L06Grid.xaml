@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L06Grid">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="O Grid é o layout mais versátil. Você define linhas e colunas e posiciona cada filho com as propriedades anexadas Grid.Row, Grid.Column, Grid.RowSpan e Grid.ColumnSpan." />
+
+    <Label Text="Os três tipos de tamanho" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+      <Label Text="Auto" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Column="1" Text="Tamanho do maior conteúdo daquela linha/coluna." />
+      <Label Grid.Row="1" Text="100 (absoluto)" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="1" Grid.Column="1" Text="Exatamente 100 unidades independentes de dispositivo." />
+      <Label Grid.Row="2" Text="* / 2* (estrela)" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="2" Grid.Column="1" Text="Divide o espaço RESTANTE proporcionalmente. 2* recebe o dobro de *." />
+    </Grid>
+
+    <TipCard Kind="Nuance">
+      O algoritmo: primeiro reserva os tamanhos absolutos, depois mede os Auto, e o que sobra é repartido entre as estrelas. Com ColumnDefinitions="100,*,2*" em 400 de largura: 100 fixo, sobram 300 → * = 100 e 2* = 200.
+    </TipCard>
+
+    <Label Text="🧪 Laboratório do Grid" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="10">
+      <VerticalStackLayout>
+        <Label Text="RowDefinitions" FontSize="12" />
+        <Entry x:Name="RowsEntry" Text="Auto,*,60" Completed="OnApply" />
+      </VerticalStackLayout>
+      <VerticalStackLayout Grid.Column="1">
+        <Label Text="ColumnDefinitions" FontSize="12" />
+        <Entry x:Name="ColsEntry" Text="100,*,2*" Completed="OnApply" />
+      </VerticalStackLayout>
+      <Button Grid.Column="2" Text="Aplicar" Clicked="OnApply" VerticalOptions="End" />
+    </Grid>
+    <HorizontalStackLayout Spacing="10">
+      <Label Text="RowSpacing/ColumnSpacing:" VerticalOptions="Center" />
+      <Slider x:Name="SpacingSlider" Maximum="24" Value="4" WidthRequest="180" ValueChanged="OnApply" />
+      <CheckBox x:Name="SpanCheck" CheckedChanged="OnApply" />
+      <Label Text="Célula (0,0) com ColumnSpan=2 e RowSpan=2" VerticalOptions="Center" />
+    </HorizontalStackLayout>
+    <Label x:Name="ErrorLabel" TextColor="{StaticResource Danger}" FontSize="12" />
+    <Border Style="{StaticResource DemoArea}" Padding="8">
+      <Grid x:Name="LabGrid" HeightRequest="300" />
+    </Border>
+    <CodeBlock x:Name="LabCode" Language="xaml" />
+
+    <Label Text="Sobreposição: vários filhos na mesma célula" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}" Text="O último filho declarado fica por cima. Ótimo para badges, overlays de carregamento e imagens com texto." />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <CodeBlock Language="xaml"><![CDATA[
+        <Grid WidthRequest="200" HeightRequest="130">
+            <Image Source="sample_landscape.png" Aspect="AspectFill" />
+            <Label Text="Paisagem" VerticalOptions="End"
+                   BackgroundColor="#80000000" TextColor="White" Padding="8" />
+            <Border HorizontalOptions="End" VerticalOptions="Start" Margin="6"
+                    BackgroundColor="Red" StrokeShape="Ellipse" Padding="8,2">
+                <Label Text="3" TextColor="White" />
+            </Border>
+        </Grid>
+      ]]></CodeBlock>
+      <Grid Grid.Column="1" WidthRequest="200" HeightRequest="130" HorizontalOptions="Center">
+        <Image Source="sample_landscape.png" Aspect="AspectFill" />
+        <Label Text="Paisagem" VerticalOptions="End" BackgroundColor="#80000000" TextColor="White" Padding="8" />
+        <Border HorizontalOptions="End" VerticalOptions="Start" Margin="6" BackgroundColor="Red" StrokeThickness="0" StrokeShape="Ellipse" Padding="8,2">
+          <Label Text="3" TextColor="White" />
+        </Border>
+      </Grid>
+    </Grid>
+
+    <Label Text="Grid em C#" Style="{StaticResource H2}" />
+    <CodeBlock Language="csharp"><![CDATA[
+      var grid = new Grid
+      {
+          RowDefinitions = { new RowDefinition(GridLength.Auto), new RowDefinition(GridLength.Star) },
+          ColumnDefinitions = { new ColumnDefinition(200), new ColumnDefinition(new GridLength(2, GridUnitType.Star)) },
+      };
+      grid.Add(new Label { Text = "Título" }, column: 0, row: 0);   // atenção: coluna antes da linha!
+      var conteudo = new BoxView();
+      grid.Add(conteudo, 1, 1);
+      Grid.SetRowSpan(conteudo, 1);
+    ]]></CodeBlock>
+
+    <TipCard Kind="Warning">
+      Dentro de um ScrollView vertical, uma linha '*' não tem espaço "restante" para dividir (a altura é infinita) e vira, na prática, Auto.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

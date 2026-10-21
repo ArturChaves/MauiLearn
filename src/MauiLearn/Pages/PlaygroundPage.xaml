@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Playground: digite XAML e veja o resultado. Usa o parser de XAML em tempo de execução
+  (LoadFromXaml). Ótimo para experimentar sem recompilar!
+-->
+<AppPage xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+         x:Class="MauiLearn.Pages.PlaygroundPage"
+         Title="Playground XAML">
+
+  <AppPage.Resources>
+    <Style x:Key="PlaygroundEditor" TargetType="Editor">
+      <Setter Property="FontFamily" Value="{OnPlatform WinUI='Consolas', MacCatalyst='Menlo'}" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="IsSpellCheckEnabled" Value="False" />
+      <Setter Property="IsTextPredictionEnabled" Value="False" />
+      <Setter Property="BackgroundColor" Value="Transparent" />
+    </Style>
+  </AppPage.Resources>
+
+  <Grid RowDefinitions="Auto,Auto,*" Padding="24,16" RowSpacing="10">
+    <VerticalStackLayout Spacing="2">
+      <Label Text="🧪 Playground XAML" Style="{StaticResource H1}" />
+      <Label Style="{StaticResource Caption}"
+             Text="Escreva um fragmento de XAML (o conteúdo de uma página). Os xmlns padrão já estão declarados para você. Recursos do app (StaticResource) funcionam!" />
+    </VerticalStackLayout>
+
+    <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="10">
+      <Picker x:Name="Templates" Title="Exemplos…" WidthRequest="260" SelectedIndexChanged="OnTemplateChanged" />
+      <HorizontalStackLayout Grid.Column="2" Spacing="6">
+        <Switch x:Name="AutoRun" IsToggled="True" VerticalOptions="Center" />
+        <Label Text="Executar ao digitar" VerticalOptions="Center" />
+      </HorizontalStackLayout>
+      <Button Grid.Column="3" Text="▶ Executar (Ctrl/⌘+Enter)" Clicked="OnRunClicked" />
+      <Button Grid.Column="4" Text="Formatar" Clicked="OnFormatClicked" Style="{StaticResource SecondaryButton}" />
+    </Grid>
+
+    <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="14">
+      <Border Style="{StaticResource Card}" Padding="0"
+              BackgroundColor="{AppThemeBinding Light={StaticResource CodeBackgroundLight}, Dark={StaticResource CodeBackgroundDark}}">
+        <Editor x:Name="Source" Style="{StaticResource PlaygroundEditor}" TextChanged="OnSourceChanged" />
+      </Border>
+      <Grid Grid.Column="1" RowDefinitions="*,Auto" RowSpacing="8">
+        <Border Style="{StaticResource DemoArea}">
+          <ScrollView>
+            <ContentView x:Name="Output" />
+          </ScrollView>
+        </Border>
+        <Label x:Name="ErrorLabel" Grid.Row="1" TextColor="{StaticResource Danger}" FontSize="12" Style="{StaticResource Mono}" />
+      </Grid>
+    </Grid>
+  </Grid>
+
+</AppPage>

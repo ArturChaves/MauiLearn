@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L21Novidades">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="O .NET MAUI evolui a cada versão anual do .NET. Esta aula resume o que mudou no .NET MAUI 10 e 11 e o que você deve (e não deve mais) usar. Tudo aqui foi conferido contra a API do .NET MAUI 11." />
+
+    <!-- ===== XAML ===== -->
+    <Label Text="🧾 XAML" Style="{StaticResource H2}" />
+
+    <Label Text="XAML Source Generator é o padrão" Style="{StaticResource H3}" />
+    <Label Style="{StaticResource Body}"
+           Text="O XAML agora é transformado em C# por um Source Generator durante o build (MauiXamlInflator=SourceGen). Os inflators antigos 'XamlC' e 'Runtime' estão obsoletos. Vantagens: inicialização mais rápida, erros no build, compatibilidade com trimming/NativeAOT e código gerado que você pode depurar." />
+    <CodeBlock Language="xaml" Title=".csproj"><![CDATA[
+      <!-- Padrão no .NET MAUI 11 — não precisa declarar -->
+      <MauiXamlInflator>SourceGen</MauiXamlInflator>
+
+      <!-- Hot Reload incremental baseado no SourceGen (opcional; o padrão é Legacy) -->
+      <MauiXamlHotReload>SourceGen</MauiXamlHotReload>
+    ]]></CodeBlock>
+
+    <Label Text="xmlns global" Style="{StaticResource H3}" />
+    <Label Style="{StaticResource Body}"
+           Text="Um único namespace XML agrega o MAUI e os seus namespaces C#, registrados com XmlnsDefinition. Acabou o festival de xmlns:local, xmlns:controls, xmlns:vm…" />
+    <CodeBlock Language="csharp" Title="GlobalXmlns.cs"><![CDATA[
+      [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "MauiLearn.Controls")]
+      [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "MauiLearn.ViewModels")]
+    ]]></CodeBlock>
+
+    <Label Text="XAML C# Expressions (experimental no .NET MAUI 11)" Style="{StaticResource H3}" />
+    <Label Style="{StaticResource Body}"
+           Text="Expressões C# diretamente em atributos com a sintaxe {= …}. Viram bindings compilados (quando possível, TwoWay) ou lambdas de eventos. Por ser experimental, exige EnablePreviewFeatures — e a sintaxe pode mudar." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <!-- .csproj: <EnablePreviewFeatures>true</EnablePreviewFeatures> -->
+      <ContentPage x:DataType="vm:PerfilViewModel" ...>
+          <Label Text="{= Nome.ToUpper()}" />
+          <Label Text="{= $'{Nome} tem {Idade} anos'}" />
+          <ActivityIndicator IsVisible="{= !Carregado}" />
+          <Button Text="+1" Clicked="{= (s, e) => Contador++}" />
+          <Label Text="{= this.Title}" />        <!-- membro da própria página -->
+      </ContentPage>
+    ]]></CodeBlock>
+    <TipCard Kind="Warning">
+      Recurso experimental: o MauiLearn não o habilita por padrão. Para testar, descomente &lt;EnablePreviewFeatures&gt; no .csproj e experimente numa página sua. Lambdas de evento assíncronas (async) não são suportadas — use um método.
+    </TipCard>
+
+    <!-- ===== Controles ===== -->
+    <Label Text="🧩 Controles e APIs" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="280,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+      <Label Text="LongPressGestureRecognizer" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Column="1" Text="Pressionar e segurar nativo (.NET MAUI 11), com LongPressed, LongPressing, MinimumPressDuration e Command." />
+
+      <Label Grid.Row="1" Text="BadgeText / BadgeColor" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="1" Grid.Column="1" Text="Contadores em itens do Shell (BaseShellItem), abas (TabbedPage.BadgeText) e ToolbarItem (.NET MAUI 11)." />
+
+      <Label Grid.Row="2" Text="*ToAsync (animações)" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="2" Grid.Column="1" Text="FadeToAsync, ScaleToAsync, TranslateToAsync, RotateToAsync… com CancellationToken. Os nomes sem Async estão obsoletos." />
+
+      <Label Grid.Row="3" Text="DisplayAlertAsync / ActionSheetAsync" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="3" Grid.Column="1" Text="Substituem DisplayAlert/DisplayActionSheet (obsoletos)." />
+
+      <Label Grid.Row="4" Text="Picker/DatePicker/TimePicker.IsOpen" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="4" Grid.Column="1" Text="Abrir/fechar por código, com eventos Opened e Closed." />
+
+      <Label Grid.Row="5" Text="DatePicker.Date / TimePicker.Time" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="5" Grid.Column="1" Text="Agora anuláveis: DateTime? e TimeSpan? (inclusive MinimumDate/MaximumDate)." />
+
+      <Label Grid.Row="6" Text="Switch.OffColor · SearchBar.SearchIconColor" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="6" Grid.Column="1" Text="Novas propriedades de aparência." />
+
+      <Label Grid.Row="7" Text="ContentPage.SafeAreaEdges" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="7" Grid.Column="1" Text="Controle fino de quais bordas respeitam a área segura (mais relevante em mobile)." />
+
+      <Label Grid.Row="8" Text="HybridWebView · TitleBar" Style="{StaticResource Mono}" FontAttributes="Bold" />
+      <Label Grid.Row="8" Grid.Column="1" Text="Chegaram no .NET MAUI 9 e seguem evoluindo: ponte JS↔C# e barra de título customizada (Windows)." />
+    </Grid>
+
+    <!-- ===== Obsoletos ===== -->
+    <Label Text="🚫 Obsoletos: o que usar no lugar" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+      <Label Text="Obsoleto" FontAttributes="Bold" TextColor="{StaticResource Danger}" />
+      <Label Grid.Column="1" Text="Use" FontAttributes="Bold" TextColor="{StaticResource Success}" />
+      <Label Grid.Row="1" Text="ListView, TableView, TextCell, ViewCell…" Style="{StaticResource Mono}" />
+      <Label Grid.Row="1" Grid.Column="1" Text="CollectionView / layouts simples" />
+      <Label Grid.Row="2" Text="Frame" Style="{StaticResource Mono}" />
+      <Label Grid.Row="2" Grid.Column="1" Text="Border + Shadow" />
+      <Label Grid.Row="3" Text="{}{TemplateBinding X}" Style="{StaticResource Mono}" />
+      <Label Grid.Row="3" Grid.Column="1" Text="{}{Binding X, Source={RelativeSource TemplatedParent}}" Style="{StaticResource Mono}" />
+      <Label Grid.Row="4" Text="Device.BeginInvokeOnMainThread, Device.RuntimePlatform" Style="{StaticResource Mono}" />
+      <Label Grid.Row="4" Grid.Column="1" Text="MainThread / Dispatcher, DeviceInfo.Platform" />
+      <Label Grid.Row="5" Text="MessagingCenter (não é mais público)" Style="{StaticResource Mono}" />
+      <Label Grid.Row="5" Grid.Column="1" Text="WeakReferenceMessenger (CommunityToolkit.Mvvm)" />
+      <Label Grid.Row="6" Text="Application.MainPage" Style="{StaticResource Mono}" />
+      <Label Grid.Row="6" Grid.Column="1" Text="override CreateWindow(...) => new Window(page)" Style="{StaticResource Mono}" />
+      <Label Grid.Row="7" Text="Page.IsBusy" Style="{StaticResource Mono}" />
+      <Label Grid.Row="7" Grid.Column="1" Text="ActivityIndicator ligado ao ViewModel" />
+      <Label Grid.Row="8" Text="FadeTo, ScaleTo, DisplayAlert…" Style="{StaticResource Mono}" />
+      <Label Grid.Row="8" Grid.Column="1" Text="FadeToAsync, ScaleToAsync, DisplayAlertAsync…" Style="{StaticResource Mono}" />
+      <Label Grid.Row="9" Text="Compatibility.* layouts, NamedSize, FillAndExpand" Style="{StaticResource Mono}" />
+      <Label Grid.Row="9" Grid.Column="1" Text="Layouts do MAUI, tamanhos numéricos, Grid com '*'" />
+    </Grid>
+
+    <TipCard Kind="Tip">
+      Este projeto silencia o aviso CS0618 (uso de obsoletos) apenas para poder ENSINAR ListView, TableView e Frame no catálogo. Nos seus projetos, deixe o aviso ligado — ele é seu amigo nas migrações.
+    </TipCard>
+    <TipCard Kind="Info">
+      Quer acompanhar? As notas "What's new in .NET MAUI" em learn.microsoft.com e o repositório github.com/dotnet/maui (releases e discussions) são as fontes oficiais.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

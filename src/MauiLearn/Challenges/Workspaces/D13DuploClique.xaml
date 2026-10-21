@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 13 — Duplo clique
+  Adicione um TapGestureRecognizer que exige DOIS cliques ao BoxView "Alvo":
+    <BoxView.GestureRecognizers>
+        <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="OnDuploClique" />
+    </BoxView.GestureRecognizers>
+  O método OnDuploClique já existe no code-behind (D13DuploClique.xaml.cs) e gira a caixa.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D13DuploClique">
+
+  <VerticalStackLayout Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
+    <BoxView x:Name="Alvo" Color="#512BD4" WidthRequest="140" HeightRequest="140" CornerRadius="20" />
+    <Label Text="Dê um duplo clique na caixa" HorizontalOptions="Center" />
+  </VerticalStackLayout>
+
+</ContentView>

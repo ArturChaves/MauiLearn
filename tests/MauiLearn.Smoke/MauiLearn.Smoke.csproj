@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Teste de fumaça: compila o código compartilhado do MauiLearn para .NET 11 "puro"
+    (sem Windows/Mac) e instancia aulas, páginas, demos do catálogo, o inspetor e os desafios,
+    validando também que cada solução de desafio passa nas próprias verificações.
+
+    Rode com:  dotnet run   (dentro da pasta tests/MauiLearn.Smoke)
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>MauiLearn</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultMauiItems>false</EnableDefaultMauiItems>
+    <AppSrc>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../../src/MauiLearn/'))</AppSrc>
+    <NoWarn>$(NoWarn);CS0618;CS0067;NU1603;NU1608;NU1701</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="11.0.*-*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="11.0.*-*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="*.cs" />
+    <Compile Include="$(AppSrc)**/*.cs" Exclude="$(AppSrc)Platforms/**;$(AppSrc)bin/**;$(AppSrc)obj/**" Link="App/%(RecursiveDir)%(Filename)%(Extension)" />
+    <MauiXaml Include="$(AppSrc)**/*.xaml" Exclude="$(AppSrc)Platforms/**;$(AppSrc)bin/**;$(AppSrc)obj/**" Link="%(RecursiveDir)%(Filename)%(Extension)" />
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>AppSrc</_Parameter1>
+      <_Parameter2>$(AppSrc)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

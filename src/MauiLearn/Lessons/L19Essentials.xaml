@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L19Essentials">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="O MAUI inclui APIs multiplataforma para recursos do sistema (o antigo Xamarin.Essentials). Cada API tem uma propriedade estática Default/Current e uma interface (IPreferences, IClipboard...) para injeção de dependência e testes." />
+
+    <!-- Preferences -->
+    <Label Text="Preferences — chave/valor simples" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+        <Entry x:Name="PrefEntry" Placeholder="Um valor para lembrar" />
+        <Button Grid.Column="1" Text="Salvar" Clicked="OnPrefSave" />
+        <Button Grid.Column="2" Text="Ler" Clicked="OnPrefLoad" Style="{StaticResource SecondaryButton}" />
+      </Grid>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      Preferences.Default.Set("nome", "Artur");
+      var nome = Preferences.Default.Get("nome", "padrão");
+      Preferences.Default.Remove("nome");
+    ]]></CodeBlock>
+
+    <!-- SecureStorage -->
+    <Label Text="SecureStorage — segredos (tokens, senhas)" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="6">
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+          <Entry x:Name="SecretEntry" Placeholder="Um segredo" IsPassword="True" />
+          <Button Grid.Column="1" Text="Guardar" Clicked="OnSecretSave" />
+          <Button Grid.Column="2" Text="Revelar" Clicked="OnSecretLoad" Style="{StaticResource SecondaryButton}" />
+        </Grid>
+        <Label x:Name="SecretResult" Style="{StaticResource Caption}" />
+      </VerticalStackLayout>
+    </Border>
+    <TipCard Kind="Desktop">
+      Windows: protegido com DPAPI. macOS: Keychain — no Mac Catalyst com App Sandbox, o SecureStorage exige o entitlement keychain-access-groups e assinatura; sem isso, a chamada pode falhar (o demo mostra o erro).
+    </TipCard>
+
+    <!-- Clipboard / Launcher -->
+    <Label Text="Clipboard e Launcher" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <FlexLayout Wrap="Wrap">
+        <Button Text="Copiar 'Olá MAUI'" Clicked="OnCopy" Margin="0,0,8,8" />
+        <Button Text="Colar" Clicked="OnPaste" Margin="0,0,8,8" Style="{StaticResource SecondaryButton}" />
+        <Button Text="Abrir docs no navegador" Clicked="OnLaunch" Margin="0,0,8,8" />
+        <Button Text="Abrir e-mail (mailto:)" Clicked="OnMail" Margin="0,0,8,8" Style="{StaticResource SecondaryButton}" />
+      </FlexLayout>
+    </Border>
+    <Label x:Name="ClipResult" Style="{StaticResource Caption}" />
+
+    <!-- FileSystem / FilePicker -->
+    <Label Text="FileSystem e FilePicker" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="6">
+        <Label x:Name="PathsLabel" Style="{StaticResource Mono}" LineBreakMode="CharacterWrap" />
+        <HorizontalStackLayout Spacing="8">
+          <Button Text="Escolher um arquivo…" Clicked="OnPickFile" />
+          <Button Text="Escrever arquivo em AppData" Clicked="OnWriteFile" Style="{StaticResource SecondaryButton}" />
+        </HorizontalStackLayout>
+        <Label x:Name="FileResult" Style="{StaticResource Mono}" LineBreakMode="CharacterWrap" />
+      </VerticalStackLayout>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      var arquivo = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = "Escolha" });
+      if (arquivo is not null)
+      {
+          await using var stream = await arquivo.OpenReadAsync();
+      }
+      var caminho = Path.Combine(FileSystem.Current.AppDataDirectory, "notas.txt");
+      await File.WriteAllTextAsync(caminho, "conteúdo");
+    ]]></CodeBlock>
+
+    <!-- Device / Connectivity / TTS / Screenshot -->
+    <Label Text="Dispositivo, rede, voz e captura de tela" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="8">
+        <Label x:Name="DeviceLabel" Style="{StaticResource Mono}" />
+        <FlexLayout Wrap="Wrap">
+          <Button Text="🔊 Falar (TextToSpeech)" Clicked="OnSpeak" Margin="0,0,8,8" />
+          <Button Text="📸 Capturar a janela (Screenshot)" Clicked="OnScreenshot" Margin="0,0,8,8" />
+        </FlexLayout>
+        <Image x:Name="ScreenshotImage" HeightRequest="160" HorizontalOptions="Start" IsVisible="False" />
+      </VerticalStackLayout>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      var plataforma = DeviceInfo.Current.Platform;              // WinUI, MacCatalyst...
+      var temInternet = Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+      await TextToSpeech.Default.SpeakAsync("Olá, MAUI!");
+      var captura = await Screenshot.Default.CaptureAsync();
+      var stream = await captura.OpenReadAsync();
+    ]]></CodeBlock>
+    <TipCard Kind="Tip">
+      Em ViewModels, injete as interfaces (IPreferences, IConnectivity, IFilePicker…) em vez de usar .Default: registre com builder.Services.AddSingleton(Preferences.Default) e seus testes podem usar implementações falsas.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

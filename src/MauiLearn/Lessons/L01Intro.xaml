@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L01Intro">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="O .NET MAUI (Multi-platform App UI) é o framework da Microsoft para criar apps nativos para Windows, macOS, Android e iOS com um único código em C# e XAML. Ele é a evolução do Xamarin.Forms, reescrito sobre o .NET moderno." />
+
+    <Label Text="A arquitetura em camadas" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Você escreve contra a API do MAUI (Button, Label, Grid...). Em tempo de execução, cada controle ganha um HANDLER, que cria o controle NATIVO da plataforma e mantém os dois sincronizados." />
+
+    <!-- Diagrama feito com Grid + Border -->
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="6" ColumnSpacing="6" Margin="0,6">
+      <Border Grid.ColumnSpan="2" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="12">
+        <Label Text="Seu app: C# + XAML (Pages, ViewModels, Views)" TextColor="White" HorizontalOptions="Center" FontAttributes="Bold" />
+      </Border>
+      <Border Grid.Row="1" Grid.ColumnSpan="2" BackgroundColor="#7B5CFA" StrokeThickness="0" Padding="12">
+        <Label Text="Microsoft.Maui.Controls — Button, Label, Grid, Shell, Binding, Estilos…" TextColor="White" HorizontalOptions="Center" />
+      </Border>
+      <Border Grid.Row="2" Grid.ColumnSpan="2" BackgroundColor="#9A84F5" StrokeThickness="0" Padding="12">
+        <Label Text="Handlers (Microsoft.Maui.Core) — ButtonHandler, LabelHandler… com seus Mappers" TextColor="White" HorizontalOptions="Center" />
+      </Border>
+      <Border Grid.Row="3" BackgroundColor="#2F80ED" StrokeThickness="0" Padding="12">
+        <Label Text="🪟 Windows: WinUI 3 (Windows App SDK)" TextColor="White" HorizontalOptions="Center" />
+      </Border>
+      <Border Grid.Row="3" Grid.Column="1" BackgroundColor="#6E6E6E" StrokeThickness="0" Padding="12">
+        <Label Text="🍎 macOS: Mac Catalyst (UIKit)" TextColor="White" HorizontalOptions="Center" />
+      </Border>
+      <Border Grid.Row="4" Grid.ColumnSpan="2" BackgroundColor="{StaticResource Gray600}" StrokeThickness="0" Padding="12">
+        <Label Text=".NET 11 (runtime, BCL, C# 15)" TextColor="White" HorizontalOptions="Center" />
+      </Border>
+    </Grid>
+
+    <Label Text="Veja com seus próprios olhos" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Os controles abaixo são controles MAUI comuns. O texto ao lado de cada um mostra o TIPO NATIVO criado pelo handler nesta plataforma — lido de Handler.PlatformView em tempo de execução." />
+
+    <Border Style="{StaticResource DemoArea}">
+      <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12" ColumnSpacing="16">
+        <Button x:Name="DemoButton" Text="Button" />
+        <Label x:Name="ButtonNative" Grid.Column="1" Style="{StaticResource Mono}" VerticalOptions="Center" />
+        <Entry x:Name="DemoEntry" Grid.Row="1" Placeholder="Entry" />
+        <Label x:Name="EntryNative" Grid.Row="1" Grid.Column="1" Style="{StaticResource Mono}" VerticalOptions="Center" />
+        <Switch x:Name="DemoSwitch" Grid.Row="2" IsToggled="True" />
+        <Label x:Name="SwitchNative" Grid.Row="2" Grid.Column="1" Style="{StaticResource Mono}" VerticalOptions="Center" />
+        <Label x:Name="DemoLabel" Grid.Row="3" Text="Label" />
+        <Label x:Name="LabelNative" Grid.Row="3" Grid.Column="1" Style="{StaticResource Mono}" VerticalOptions="Center" />
+      </Grid>
+    </Border>
+
+    <TipCard Kind="Nuance">
+      Rode este app no Windows e depois no Mac: os nomes acima mudam (ex.: Microsoft.UI.Xaml.Controls.Button × UIKit.UIButton), mas o seu XAML é o mesmo.
+      É por isso que a aparência padrão segue o visual de cada sistema.
+    </TipCard>
+
+    <Label Text="Plataformas deste projeto" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="No .csproj, TargetFrameworks diz para quais plataformas compilar. Este app é focado em desktop:" />
+    <CodeBlock Language="xaml" Title="MauiLearn.csproj"><![CDATA[
+      <TargetFrameworks>net11.0-maccatalyst</TargetFrameworks>
+      <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">
+          $(TargetFrameworks);net11.0-windows10.0.19041.0
+      </TargetFrameworks>
+      <UseMaui>true</UseMaui>
+      <SingleProject>true</SingleProject>
+    ]]></CodeBlock>
+
+    <TipCard Kind="Desktop">
+      Para compilar para Mac Catalyst você precisa de um Mac com Xcode. Para Windows, de uma máquina Windows. Um mesmo repositório serve aos dois.
+      Rode com: dotnet build -t:Run -f net11.0-maccatalyst  (Mac)  ou  dotnet build -t:Run -f net11.0-windows10.0.19041.0  (Windows).
+    </TipCard>
+
+    <Label Text="Conceitos que vamos dominar" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}">
+      <Label.FormattedText>
+        <FormattedString>
+          <Span Text="• XAML " FontAttributes="Bold" /><Span Text="— a linguagem declarativa da interface.&#10;" />
+          <Span Text="• Layouts " FontAttributes="Bold" /><Span Text="— como os elementos são medidos e posicionados.&#10;" />
+          <Span Text="• Data Binding e MVVM " FontAttributes="Bold" /><Span Text="— ligar a UI aos dados sem código de 'cola'.&#10;" />
+          <Span Text="• Estilos e temas " FontAttributes="Bold" /><Span Text="— consistência visual e modo escuro.&#10;" />
+          <Span Text="• Navegação " FontAttributes="Bold" /><Span Text="— Shell, rotas e janelas.&#10;" />
+          <Span Text="• Handlers " FontAttributes="Bold" /><Span Text="— quando precisar ir até o nativo." />
+        </FormattedString>
+      </Label.FormattedText>
+    </Label>
+
+    <TipCard Kind="Info">
+      MAUI não é Blazor: com Blazor Hybrid (BlazorWebView) você escreve UI em HTML/Razor dentro de um app MAUI. Aqui focamos na UI nativa com XAML.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

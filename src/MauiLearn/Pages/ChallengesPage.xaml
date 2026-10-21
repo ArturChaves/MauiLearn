@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AppPage xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+         x:Class="MauiLearn.Pages.ChallengesPage"
+         Title="Desafios">
+
+  <Grid RowDefinitions="Auto,Auto,*" Padding="28,20,28,0" RowSpacing="12">
+    <VerticalStackLayout Spacing="4">
+      <Label Text="Desafios com Hot Reload" Style="{StaticResource H1}" />
+      <Label Style="{StaticResource Body}"
+             Text="Cada desafio tem um arquivo XAML de 'área de trabalho' em src/MauiLearn/Challenges/Workspaces/. Com o app rodando em modo Debug, abra o arquivo no seu editor, altere, salve e veja a tela mudar na hora. Depois clique em Verificar." />
+    </VerticalStackLayout>
+
+    <TipCard Grid.Row="1" Kind="Tip" Header="Como ativar o Hot Reload">
+      Visual Studio (Windows): rode com F5 (Debug) e mantenha 'Hot Reload on File Save' ligado.
+      VS Code + C# Dev Kit / .NET MAUI (Windows e macOS): rode com F5 em Debug; o XAML Hot Reload aplica ao salvar.
+      Rider: Debug + XAML Hot Reload habilitado nas configurações. Veja a Aula 03 para detalhes.
+    </TipCard>
+
+    <CollectionView x:Name="List" Grid.Row="2" SelectionMode="Single" SelectionChanged="OnSelected">
+      <CollectionView.ItemsLayout>
+        <GridItemsLayout x:Name="GridLayout" Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
+      </CollectionView.ItemsLayout>
+      <CollectionView.ItemTemplate>
+        <DataTemplate x:DataType="ChallengeRow">
+          <Border Style="{StaticResource Card}">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup Name="CommonStates">
+                <VisualState Name="Normal" />
+                <VisualState Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+              <Label Grid.RowSpan="3" Text="{Binding Info.NumberText}" FontSize="30" FontAttributes="Bold" Opacity="0.3" VerticalOptions="Center" />
+              <Label Grid.Column="1" Text="{Binding Info.Title}" FontAttributes="Bold" FontSize="16" />
+              <Label Grid.Column="1" Grid.Row="1" Text="{Binding Info.Goal}" FontSize="13" MaxLines="2" LineBreakMode="TailTruncation" Opacity="0.85" />
+              <Label Grid.Column="1" Grid.Row="2" Text="{Binding Info.File}" Style="{StaticResource Caption}" />
+              <VerticalStackLayout Grid.Column="2" Grid.RowSpan="3" VerticalOptions="Center" Spacing="4">
+                <Label Text="{Binding Done, Converter={StaticResource DoneGlyph}}" FontSize="22" HorizontalOptions="Center" />
+                <Label Text="{Binding Info.Difficulty}" Style="{StaticResource ChipLabel}" HorizontalOptions="Center" />
+              </VerticalStackLayout>
+            </Grid>
+          </Border>
+        </DataTemplate>
+      </CollectionView.ItemTemplate>
+    </CollectionView>
+  </Grid>
+</AppPage>

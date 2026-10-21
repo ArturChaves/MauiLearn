@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L10Navegacao">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="O MAUI oferece duas formas de navegar: o Shell (baseado em rotas URI — usado neste app) e a navegação por pilha (INavigation: PushAsync/PopAsync), disponível em qualquer página." />
+
+    <!-- ===== 1 ===== -->
+    <Label Text="1. A hierarquia do Shell" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml" Title="AppShell.xaml (simplificado)"><![CDATA[
+      <Shell FlyoutBehavior="Locked">
+          <FlyoutItem Title="Início" Route="home">            <!-- item do menu lateral -->
+              <ShellContent ContentTemplate="{DataTemplate HomePage}" />
+          </FlyoutItem>
+          <FlyoutItem Title="Catálogo" Route="catalog">
+              <ShellContent ContentTemplate="{DataTemplate CatalogPage}" />
+          </FlyoutItem>
+          <TabBar>                                           <!-- abas, sem flyout -->
+              <Tab Title="A"><ShellContent ContentTemplate="{DataTemplate APage}" /></Tab>
+              <Tab Title="B"><ShellContent ContentTemplate="{DataTemplate BPage}" /></Tab>
+          </TabBar>
+      </Shell>
+    ]]></CodeBlock>
+    <TipCard Kind="Nuance">
+      ContentTemplate="{DataTemplate ...}" cria a página só quando ela é visitada (carregamento sob demanda) — e, se a página estiver registrada na DI, o Shell a cria via injeção de dependência.
+    </TipCard>
+
+    <!-- ===== 2 ===== -->
+    <Label Text="2. Rotas e GoToAsync" Style="{StaticResource H2}" />
+    <CodeBlock Language="csharp"><![CDATA[
+      // Registro de rotas de detalhe (não aparecem no menu):
+      Routing.RegisterRoute("component", typeof(ComponentDetailPage));
+
+      await Shell.Current.GoToAsync("//catalog");                 // absoluta: troca de seção
+      await Shell.Current.GoToAsync("component?id=Button");       // relativa: empilha
+      await Shell.Current.GoToAsync("..");                        // volta uma página
+      await Shell.Current.GoToAsync("../component?id=Label");     // volta e navega
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <FlexLayout Wrap="Wrap">
+        <Button Text="GoToAsync(&quot;//catalog&quot;)" Clicked="OnGoCatalog" Margin="0,0,8,8" />
+        <Button Text="GoToAsync(&quot;component?id=Slider&quot;)" Clicked="OnGoSlider" Margin="0,0,8,8" />
+        <Button Text="GoToAsync com Dictionary" Clicked="OnGoWithDictionary" Margin="0,0,8,8" />
+      </FlexLayout>
+    </Border>
+
+    <!-- ===== 3 ===== -->
+    <Label Text="3. Recebendo parâmetros: IQueryAttributable" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="A página de detalhe deste app implementa IQueryAttributable. É trim-safe (sem reflexão) e recebe tanto parâmetros de query string quanto objetos passados num Dictionary." />
+    <CodeBlock Language="csharp"><![CDATA[
+      public partial class ComponentDetailPage : ContentPage, IQueryAttributable
+      {
+          public void ApplyQueryAttributes(IDictionary<string, object> query)
+          {
+              if (query.TryGetValue("id", out var id))
+                  Load(ComponentCatalog.Find(id.ToString()));
+          }
+      }
+
+      // Passando objetos (não precisam ser strings):
+      await Shell.Current.GoToAsync("detalhe", new Dictionary<string, object>
+      {
+          ["Produto"] = produtoSelecionado,
+      });
+    ]]></CodeBlock>
+
+    <!-- ===== 4 ===== -->
+    <Label Text="4. Pilha e modais (INavigation)" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Toda página tem Navigation. PushAsync empilha (com botão voltar); PushModalAsync abre por cima de tudo, sem barra de navegação — o usuário precisa de um botão para fechar." />
+    <Border Style="{StaticResource DemoArea}">
+      <HorizontalStackLayout Spacing="8">
+        <Button Text="PushAsync(página)" Clicked="OnPush" />
+        <Button Text="PushModalAsync(página)" Clicked="OnModal" />
+        <Button Text="Nova janela (desktop)" Clicked="OnWindow" Style="{StaticResource SecondaryButton}" />
+      </HorizontalStackLayout>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      await Navigation.PushAsync(new DetalhePage());
+      await Navigation.PushModalAsync(new LoginPage());
+      await Navigation.PopModalAsync();
+      Application.Current!.OpenWindow(new Window(new DetalhePage()));   // desktop
+    ]]></CodeBlock>
+
+    <!-- ===== 5 ===== -->
+    <Label Text="5. Diálogos" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="8">
+        <HorizontalStackLayout Spacing="8">
+          <Button Text="DisplayAlertAsync" Clicked="OnAlert" />
+          <Button Text="DisplayActionSheetAsync" Clicked="OnSheet" />
+          <Button Text="DisplayPromptAsync" Clicked="OnPrompt" />
+        </HorizontalStackLayout>
+        <Label x:Name="DialogResult" FontAttributes="Bold" />
+      </VerticalStackLayout>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      bool sim = await page.DisplayAlertAsync("Excluir?", "Isso não pode ser desfeito.", "Excluir", "Cancelar");
+      string? opcao = await page.DisplayActionSheetAsync("Exportar como", "Cancelar", null, "PDF", "CSV", "JSON");
+      string? nome = await page.DisplayPromptAsync("Seu nome", "Como você se chama?", placeholder: "Nome");
+    ]]></CodeBlock>
+    <TipCard Kind="New">
+      No .NET MAUI 10+, DisplayAlert e DisplayActionSheet foram renomeados para DisplayAlertAsync e DisplayActionSheetAsync (os antigos estão obsoletos).
+    </TipCard>
+
+    <!-- ===== 6 ===== -->
+    <Label Text="6. Interceptando a navegação" Style="{StaticResource H2}" />
+    <CodeBlock Language="csharp"><![CDATA[
+      // Na AppShell: pergunte antes de sair de uma tela com alterações não salvas
+      protected override async void OnNavigating(ShellNavigatingEventArgs args)
+      {
+          base.OnNavigating(args);
+          if (temAlteracoes && args.CanCancel)
+          {
+              var deferral = args.GetDeferral();
+              var sair = await CurrentPage.DisplayAlertAsync("Sair?", "Descartar alterações?", "Sim", "Não");
+              if (!sair) args.Cancel();
+              deferral.Complete();
+          }
+      }
+    ]]></CodeBlock>
+  </VerticalStackLayout>
+</ContentView>

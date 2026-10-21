@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L05Layouts">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Layouts são Views que posicionam outras Views. Todo o sistema funciona em duas fases, de cima para baixo na árvore:" />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="1️⃣  Measure (medir)" FontAttributes="Bold" />
+          <Label FontSize="13" Text="O pai pergunta a cada filho: 'dado este espaço disponível, de quanto você precisa?'. O filho responde com um tamanho desejado (considerando WidthRequest, conteúdo, Margin…)." />
+        </VerticalStackLayout>
+      </Border>
+      <Border Grid.Column="1" Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="2️⃣  Arrange (arranjar)" FontAttributes="Bold" />
+          <Label FontSize="13" Text="O pai decide o retângulo final de cada filho. É aqui que HorizontalOptions/VerticalOptions (Start, Center, End, Fill) entram em jogo." />
+        </VerticalStackLayout>
+      </Border>
+    </Grid>
+
+    <!-- ===================== LAB 1 ===================== -->
+    <Label Text="🧪 Laboratório: Margin, Padding e Options" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="O retângulo cinza é o PAI (com Padding). O roxo é o FILHO (com Margin e Options). Mexa nos controles e observe." />
+
+    <Grid ColumnDefinitions="300,*" ColumnSpacing="20">
+      <VerticalStackLayout Spacing="6">
+        <Label Text="Padding do pai" FontSize="13" />
+        <Slider x:Name="PaddingSlider" Maximum="60" ValueChanged="OnLabChanged" />
+        <Label Text="Margin do filho" FontSize="13" />
+        <Slider x:Name="MarginSlider" Maximum="60" ValueChanged="OnLabChanged" />
+        <Label Text="WidthRequest do filho (0 = automático)" FontSize="13" />
+        <Slider x:Name="WidthSlider" Maximum="300" ValueChanged="OnLabChanged" />
+        <Label Text="HorizontalOptions" FontSize="13" />
+        <Picker x:Name="HPicker" SelectedIndexChanged="OnLabChanged" />
+        <Label Text="VerticalOptions" FontSize="13" />
+        <Picker x:Name="VPicker" SelectedIndexChanged="OnLabChanged" />
+      </VerticalStackLayout>
+
+      <VerticalStackLayout Grid.Column="1" Spacing="8">
+        <Grid x:Name="ParentGrid" HeightRequest="280" BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
+          <Border x:Name="Child" BackgroundColor="#512BD4" StrokeThickness="0" Padding="10">
+            <Label Text="Filho" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+          </Border>
+        </Grid>
+        <CodeBlock x:Name="LabCode" Language="xaml" Title="XAML equivalente" />
+      </VerticalStackLayout>
+    </Grid>
+
+    <TipCard Kind="Nuance">
+      Fill (padrão) estica o filho para ocupar o espaço. Start/Center/End fazem o filho usar só o tamanho de que precisa. Por isso um Border com HorizontalOptions=Fill ignora o "tamanho do conteúdo" na largura.
+    </TipCard>
+    <TipCard Kind="Tip">
+      Margin = espaço FORA do elemento (afasta vizinhos). Padding = espaço DENTRO (afasta o conteúdo da borda). Só layouts, Border, Button, Label e alguns outros têm Padding.
+    </TipCard>
+
+    <!-- ===================== LAB 2 ===================== -->
+    <Label Text="🧪 Laboratório: escolhendo o layout" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}" Text="Os mesmos 7 filhos em layouts diferentes. Redimensione a janela para ver o FlexLayout quebrar linha." />
+    <HorizontalStackLayout Spacing="14" RadioButtonGroup.GroupName="layoutKind">
+      <RadioButton x:Name="KindVertical" Content="VerticalStackLayout" IsChecked="True" CheckedChanged="OnKindChanged" />
+      <RadioButton x:Name="KindHorizontal" Content="HorizontalStackLayout" CheckedChanged="OnKindChanged" />
+      <RadioButton x:Name="KindFlex" Content="FlexLayout (Wrap)" CheckedChanged="OnKindChanged" />
+      <RadioButton x:Name="KindGrid" Content="Grid (3 colunas)" CheckedChanged="OnKindChanged" />
+    </HorizontalStackLayout>
+    <HorizontalStackLayout Spacing="8">
+      <Label Text="Spacing:" VerticalOptions="Center" />
+      <Slider x:Name="SpacingSlider" Maximum="30" Value="6" WidthRequest="200" ValueChanged="OnKindChanged" />
+    </HorizontalStackLayout>
+    <Border Style="{StaticResource DemoArea}">
+      <ContentView x:Name="KindHost" />
+    </Border>
+    <CodeBlock x:Name="KindCode" Language="xaml" />
+
+    <!-- ===================== Resumo ===================== -->
+    <Label Text="Qual layout usar?" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+      <Label Text="VerticalStackLayout" FontAttributes="Bold" />
+      <Label Grid.Column="1" Text="Formulários, listas curtas, conteúdo empilhado. Leve e simples." />
+      <Label Grid.Row="1" Text="HorizontalStackLayout" FontAttributes="Bold" />
+      <Label Grid.Row="1" Grid.Column="1" Text="Ícone + texto, barras de botões." />
+      <Label Grid.Row="2" Text="Grid" FontAttributes="Bold" />
+      <Label Grid.Row="2" Grid.Column="1" Text="Telas inteiras, alinhamentos em colunas, sobreposição, distribuir espaço restante (*)." />
+      <Label Grid.Row="3" Text="FlexLayout" FontAttributes="Bold" />
+      <Label Grid.Row="3" Grid.Column="1" Text="Itens que quebram linha (chips/tags), distribuição tipo CSS." />
+      <Label Grid.Row="4" Text="AbsoluteLayout" FontAttributes="Bold" />
+      <Label Grid.Row="4" Grid.Column="1" Text="Posições exatas/proporcionais; overlays específicos." />
+      <Label Grid.Row="5" Text="ScrollView" FontAttributes="Bold" />
+      <Label Grid.Row="5" Grid.Column="1" Text="Quando o conteúdo é maior que a tela. Um único filho." />
+    </Grid>
+
+    <TipCard Kind="Warning">
+      Evite aninhar muitos layouts (ex.: StackLayout dentro de StackLayout dentro de StackLayout). Cada nível custa medidas extras. Um Grid bem pensado substitui vários níveis.
+    </TipCard>
+    <TipCard Kind="Desktop">
+      Em telas grandes, limite a largura de textos com MaximumWidthRequest (esta aula usa 1000) e use SizeChanged ou AdaptiveTrigger (Aula 12) para trocar o layout conforme a janela.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

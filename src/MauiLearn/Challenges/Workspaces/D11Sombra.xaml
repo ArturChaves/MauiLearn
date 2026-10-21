@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 11 — Cantos e sombra
+  Dê ao cartão da foto:
+    1. Cantos arredondados de 16 ou mais: StrokeShape="RoundRectangle 16"
+    2. Uma sombra com Radius de 10 ou mais:
+         <Border.Shadow><Shadow Radius="16" Opacity="0.4" Offset="0,6" /></Border.Shadow>
+    3. Bônus: StrokeThickness="0"
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D11Sombra">
+
+  <Border x:Name="Foto"
+          WidthRequest="300" HeightRequest="190"
+          HorizontalOptions="Center" VerticalOptions="Center"
+          StrokeShape="Rectangle">
+    <Image Source="sample_landscape.png" Aspect="AspectFill" />
+  </Border>
+
+</ContentView>

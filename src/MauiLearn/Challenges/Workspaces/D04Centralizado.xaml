@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 04 — Centralizado de verdade
+  O cartão ocupa a área toda. Faça-o ficar no CENTRO, com tamanho próprio:
+    1. HorizontalOptions="Center" e VerticalOptions="Center"
+    2. WidthRequest="240"
+    3. Padding de 20 (dentro do cartão) e Margin 0
+  Observe a diferença entre Margin (fora) e Padding (dentro).
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D04Centralizado">
+
+  <Grid BackgroundColor="#11512BD4">
+    <Border x:Name="Cartao"
+            BackgroundColor="#512BD4"
+            StrokeShape="RoundRectangle 16"
+            Margin="10">
+      <Label Text="Cartão" TextColor="White" FontSize="20" />
+    </Border>
+  </Grid>
+
+</ContentView>

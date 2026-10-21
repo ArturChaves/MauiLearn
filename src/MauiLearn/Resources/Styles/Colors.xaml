@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<!--
+  Paleta do app. Cores são recursos (StaticResource/DynamicResource).
+  Dica de estudo: altere "Primary" e salve com o app rodando (Hot Reload)!
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+  <Color x:Key="Primary">#512BD4</Color>
+  <Color x:Key="PrimaryDark">#AC99EA</Color>
+  <Color x:Key="PrimaryDarkText">#242424</Color>
+  <Color x:Key="Secondary">#DFD8F7</Color>
+  <Color x:Key="SecondaryDarkText">#9880E5</Color>
+  <Color x:Key="Tertiary">#2B0B98</Color>
+
+  <Color x:Key="Success">#2E9D5B</Color>
+  <Color x:Key="Warning">#E59A12</Color>
+  <Color x:Key="Danger">#D64545</Color>
+  <Color x:Key="Info">#2F80ED</Color>
+
+  <Color x:Key="White">White</Color>
+  <Color x:Key="Black">Black</Color>
+  <Color x:Key="Magenta">#D600AA</Color>
+  <Color x:Key="MidnightBlue">#190649</Color>
+  <Color x:Key="OffBlack">#1F1F1F</Color>
+
+  <Color x:Key="Gray100">#E1E1E1</Color>
+  <Color x:Key="Gray200">#C8C8C8</Color>
+  <Color x:Key="Gray300">#ACACAC</Color>
+  <Color x:Key="Gray400">#919191</Color>
+  <Color x:Key="Gray500">#6E6E6E</Color>
+  <Color x:Key="Gray600">#404040</Color>
+  <Color x:Key="Gray900">#212121</Color>
+  <Color x:Key="Gray950">#141414</Color>
+
+  <!-- Superfícies usadas nos cartões do app -->
+  <Color x:Key="SurfaceLight">#F7F5FD</Color>
+  <Color x:Key="SurfaceDark">#232029</Color>
+  <Color x:Key="CodeBackgroundLight">#F2F0F7</Color>
+  <Color x:Key="CodeBackgroundDark">#17151C</Color>
+
+  <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+  <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
+  <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}" />
+  <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}" />
+
+  <LinearGradientBrush x:Key="HeroBrush" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="#7B5CFA" Offset="0" />
+    <GradientStop Color="#512BD4" Offset="0.6" />
+    <GradientStop Color="#2B0B98" Offset="1" />
+  </LinearGradientBrush>
+
+</ResourceDictionary>

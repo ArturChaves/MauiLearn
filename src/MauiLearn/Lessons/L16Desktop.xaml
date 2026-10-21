@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L16Desktop">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Apps de desktop têm expectativas próprias: barra de menus, atalhos de teclado, botão direito, tooltips, hover, várias janelas e redimensionamento. O MAUI cobre tudo isso — este app usa cada um desses recursos." />
+
+    <!-- ===== 1 ===== -->
+    <Label Text="1. MenuBar e atalhos (KeyboardAccelerator)" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Olhe para a barra de menus da janela (Windows) ou para a barra de menus do topo da tela (macOS): 'Navegar', 'Exibir' e 'Ajuda' são MenuBarItems definidos em Controls/AppPage.cs. Teste Ctrl/⌘+1…5." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <ContentPage.MenuBarItems>
+          <MenuBarItem Text="Arquivo">
+              <MenuFlyoutItem Text="Salvar" Command="{Binding SalvarCommand}">
+                  <MenuFlyoutItem.KeyboardAccelerators>
+                      <KeyboardAccelerator Modifiers="Ctrl" Key="S" />
+                  </MenuFlyoutItem.KeyboardAccelerators>
+              </MenuFlyoutItem>
+              <MenuFlyoutSeparator />
+              <MenuFlyoutSubItem Text="Exportar">
+                  <MenuFlyoutItem Text="PDF" />
+              </MenuFlyoutSubItem>
+          </MenuBarItem>
+      </ContentPage.MenuBarItems>
+    ]]></CodeBlock>
+    <TipCard Kind="Nuance">
+      MenuBarItems pertence à PÁGINA. Se cada tela definir seu menu, ele muda ao navegar. Para um menu global, crie uma página base (como AppPage) ou adicione os itens em código.
+    </TipCard>
+    <TipCard Kind="Desktop">
+      No macOS o atalho padrão é ⌘ (Cmd). Use KeyboardAcceleratorModifiers.Cmd no Mac e Ctrl no Windows — o AppPage escolhe com OperatingSystem.IsMacCatalyst().
+    </TipCard>
+
+    <!-- ===== 2 ===== -->
+    <Label Text="2. Menu de contexto (botão direito)" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <Label x:Name="ContextTarget" Text="🖱️ Clique com o botão direito neste texto" FontSize="18" Padding="10">
+        <FlyoutBase.ContextFlyout>
+          <MenuFlyout>
+            <MenuFlyoutItem Text="Copiar texto" Clicked="OnCopyText" />
+            <MenuFlyoutItem Text="Deixar em negrito" Clicked="OnBold" />
+            <MenuFlyoutSeparator />
+            <MenuFlyoutSubItem Text="Tamanho">
+              <MenuFlyoutItem Text="Pequeno" Clicked="OnSize" CommandParameter="14" />
+              <MenuFlyoutItem Text="Médio" Clicked="OnSize" CommandParameter="18" />
+              <MenuFlyoutItem Text="Grande" Clicked="OnSize" CommandParameter="28" />
+            </MenuFlyoutSubItem>
+          </MenuFlyout>
+        </FlyoutBase.ContextFlyout>
+      </Label>
+    </Border>
+
+    <!-- ===== 3 ===== -->
+    <Label Text="3. Tooltips e hover" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <HorizontalStackLayout Spacing="12">
+        <Button Text="💾" ToolTipProperties.Text="Salvar (Ctrl+S)" WidthRequest="50" />
+        <Button Text="📂" ToolTipProperties.Text="Abrir arquivo" WidthRequest="50" />
+        <Button Text="🗑" ToolTipProperties.Text="Excluir" WidthRequest="50" />
+        <Border Padding="14,8" StrokeShape="RoundRectangle 8" ToolTipProperties.Text="Bordas também têm tooltip">
+          <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup Name="CommonStates">
+              <VisualState Name="Normal" />
+              <VisualState Name="PointerOver">
+                <VisualState.Setters>
+                  <Setter Property="BackgroundColor" Value="#33512BD4" />
+                </VisualState.Setters>
+              </VisualState>
+            </VisualStateGroup>
+          </VisualStateManager.VisualStateGroups>
+          <Label Text="Hover com VisualState PointerOver" />
+        </Border>
+      </HorizontalStackLayout>
+    </Border>
+
+    <!-- ===== 4 ===== -->
+    <Label Text="4. Janelas: tamanho, posição e várias janelas" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}" Text="A janela atual (Window) é acessível por qualquer elemento visível via this.Window. Redimensione a janela e veja os valores mudarem:" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="10">
+        <Label x:Name="WindowInfo" Style="{StaticResource Mono}" FontSize="15" />
+        <FlexLayout Wrap="Wrap">
+          <Button Text="1024 × 700" Clicked="OnSizeSmall" Margin="0,0,8,8" />
+          <Button Text="1400 × 900" Clicked="OnSizeLarge" Margin="0,0,8,8" />
+          <Button Text="Mover para (80, 80)" Clicked="OnMove" Margin="0,0,8,8" />
+          <Button Text="Mudar título" Clicked="OnTitle" Margin="0,0,8,8" />
+          <Button Text="Abrir nova janela" Clicked="OnNewWindow" Margin="0,0,8,8" />
+          <Button Text="TitleBar customizada (Windows)" Clicked="OnTitleBar" Margin="0,0,8,8" Style="{StaticResource SecondaryButton}" />
+        </FlexLayout>
+      </VerticalStackLayout>
+    </Border>
+    <CodeBlock Language="csharp"><![CDATA[
+      var window = this.Window;                 // a janela que contém este elemento
+      window.Width = 1024; window.Height = 700;
+      window.X = 80; window.Y = 80;
+      window.Title = "Novo título";
+      window.SizeChanged += (s, e) => Debug.WriteLine($"{window.Width}x{window.Height}");
+
+      Application.Current!.OpenWindow(new Window(new AppShell()));   // outra janela
+      Application.Current!.CloseWindow(window);                      // fechar
+    ]]></CodeBlock>
+    <TipCard Kind="Desktop">
+      Mac Catalyst: para múltiplas janelas é preciso UIApplicationSupportsMultipleScenes=true e um SceneDelegate (veja Platforms/MacCatalyst/Info.plist e SceneDelegate.cs). Alguns ajustes de posição podem ser ignorados pelo sistema no macOS.
+    </TipCard>
+
+    <!-- ===== 5 ===== -->
+    <Label Text="5. Mac Catalyst: detalhes que importam" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="• UIDeviceFamily=2 no Info.plist ('Optimize for Mac') usa a escala nativa do macOS — textos e controles ficam com tamanho de Mac (o valor 6 escala como iPad).&#10;• Entitlements.plist: App Sandbox e permissões (rede, arquivos selecionados pelo usuário...).&#10;• O menu de app (Sobre, Sair, Janela) é do sistema; seus MenuBarItems são adicionados." />
+
+    <!-- ===== 6 ===== -->
+    <Label Text="6. Windows: detalhes que importam" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="• WindowsPackageType=None: executável comum (sem MSIX) — simples para desenvolver; para distribuir na Store, use MSIX.&#10;• Window.TitleBar permite uma barra de título customizada com conteúdo (busca, avatar...).&#10;• O tema segue o modo claro/escuro do Windows (Application.RequestedTheme)." />
+  </VerticalStackLayout>
+</ContentView>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Shell = navegação "pronta": flyout (menu lateral), abas e rotas URI.
+  No desktop deixamos o flyout travado (Locked) — vira uma barra lateral fixa.
+-->
+<Shell xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       x:Class="MauiLearn.AppShell"
+       Title="MauiLearn"
+       FlyoutBehavior="Locked"
+       FlyoutWidth="250">
+
+  <Shell.FlyoutHeader>
+    <Grid Padding="20,24,20,16" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+      <Image Source="maui_logo.png" WidthRequest="44" HeightRequest="44" Grid.RowSpan="2" />
+      <Label Grid.Column="1" Text="MauiLearn" FontSize="22" FontAttributes="Bold"
+             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+      <Label Grid.Column="1" Grid.Row="1" Text="Aprenda .NET MAUI 11" Style="{StaticResource Caption}" />
+    </Grid>
+  </Shell.FlyoutHeader>
+
+  <!-- Cada FlyoutItem vira um item do menu. ContentTemplate cria a página sob demanda. -->
+  <FlyoutItem Title="🏠  Início" Route="home">
+    <ShellContent ContentTemplate="{DataTemplate HomePage}" />
+  </FlyoutItem>
+
+  <FlyoutItem Title="📚  Aulas" Route="lessons">
+    <ShellContent ContentTemplate="{DataTemplate LessonsPage}" />
+  </FlyoutItem>
+
+  <FlyoutItem Title="🧩  Catálogo de Componentes" Route="catalog">
+    <ShellContent ContentTemplate="{DataTemplate CatalogPage}" />
+  </FlyoutItem>
+
+  <!-- BadgeText (novo no .NET MAUI 11): o code-behind mostra quantos desafios faltam -->
+  <FlyoutItem x:Name="ChallengesItem" Title="🏆  Desafios (Hot Reload)" Route="challenges">
+    <ShellContent ContentTemplate="{DataTemplate ChallengesPage}" />
+  </FlyoutItem>
+
+  <FlyoutItem Title="🧪  Playground XAML" Route="playground">
+    <ShellContent ContentTemplate="{DataTemplate PlaygroundPage}" />
+  </FlyoutItem>
+
+  <FlyoutItem Title="⚙️  Configurações" Route="settings">
+    <ShellContent ContentTemplate="{DataTemplate SettingsPage}" />
+  </FlyoutItem>
+
+  <Shell.FlyoutFooter>
+    <Label Padding="20,12" Text="Dica: Ctrl/⌘ + K abre a busca do catálogo" Style="{StaticResource Caption}" />
+  </Shell.FlyoutFooter>
+</Shell>

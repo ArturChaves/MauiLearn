@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  x:DataType no elemento raiz: TODOS os bindings abaixo são "compiled bindings" contra
+  BindingLessonViewModel. Se você digitar um nome de propriedade errado, o build avisa
+  (MAUIG2045) e aquele binding cai para o modo lento, por reflexão.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L07Binding"
+             x:DataType="BindingLessonViewModel">
+
+  <ContentView.Resources>
+    <CelsiusToFahrenheitConverter x:Key="CToF" />
+    <FullNameConverter x:Key="FullName" />
+  </ContentView.Resources>
+
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Binding liga uma propriedade de DESTINO (num controle) a uma propriedade de ORIGEM (num objeto qualquer). Quando a origem muda e notifica (INotifyPropertyChanged), o destino atualiza sozinho — e vice-versa, dependendo do modo." />
+
+    <!-- ===== 1 ===== -->
+    <Label Text="1. Binding entre controles (x:Reference)" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Slider x:Name="slider" Maximum="360" />
+      <Label Text="{Binding Value, Source={x:Reference slider}, StringFormat='{0:F0}°'}" />
+      <BoxView Rotation="{Binding Value, Source={x:Reference slider}}" />
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <HorizontalStackLayout Spacing="20">
+        <Slider x:Name="RotSlider" Maximum="360" WidthRequest="240" VerticalOptions="Center" />
+        <Label Text="{Binding Value, Source={x:Reference RotSlider}, StringFormat='{0:F0}°', x:DataType=Slider}" VerticalOptions="Center" WidthRequest="60" />
+        <BoxView Color="#D600AA" WidthRequest="60" HeightRequest="60" CornerRadius="8"
+                 Rotation="{Binding Value, Source={x:Reference RotSlider}, x:DataType=Slider}" />
+      </HorizontalStackLayout>
+    </Border>
+    <TipCard Kind="Nuance">
+      Como o elemento raiz tem x:DataType=BindingLessonViewModel, bindings com Source={x:Reference} declaram o tipo da origem com x:DataType=Slider dentro do próprio binding.
+    </TipCard>
+
+    <!-- ===== 2 ===== -->
+    <Label Text="2. BindingContext: a origem padrão (e herdada)" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Quando um binding não tem Source, ele usa o BindingContext do elemento — que é HERDADO dos pais. Esta aula define BindingContext = new BindingLessonViewModel() no code-behind; todos os filhos o enxergam." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Entry Text="{Binding Name}" />       <!-- TwoWay por padrão em Entry.Text -->
+      <Entry Text="{Binding Surname}" />
+      <Label Text="{Binding Greeting}" />    <!-- propriedade calculada que notifica -->
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="8">
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+          <Entry Text="{Binding Name}" Placeholder="Nome" />
+          <Entry Grid.Column="1" Text="{Binding Surname}" Placeholder="Sobrenome" />
+        </Grid>
+        <Label Text="{Binding Greeting}" FontSize="20" FontAttributes="Bold" />
+      </VerticalStackLayout>
+    </Border>
+
+    <!-- ===== 3 ===== -->
+    <Label Text="3. Modos de binding" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Os quatro sliders abaixo estão ligados à MESMA propriedade Volume do ViewModel, cada um com um modo diferente. Arraste cada um e veja quem afeta quem." />
+    <Border Style="{StaticResource DemoArea}">
+      <Grid ColumnDefinitions="170,*,240" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="10" ColumnSpacing="12">
+        <Label Text="Volume no ViewModel:" FontAttributes="Bold" />
+        <Label Grid.Column="1" Text="{Binding Volume, StringFormat='{0:F0}'}" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+
+        <Label Grid.Row="1" Text="OneWay" Style="{StaticResource Mono}" VerticalOptions="Center" />
+        <Slider Grid.Row="1" Grid.Column="1" Maximum="100" Value="{Binding Volume, Mode=OneWay}" />
+        <Label Grid.Row="1" Grid.Column="2" Text="origem → destino" FontSize="12" VerticalOptions="Center" />
+
+        <Label Grid.Row="2" Text="TwoWay" Style="{StaticResource Mono}" VerticalOptions="Center" />
+        <Slider Grid.Row="2" Grid.Column="1" Maximum="100" Value="{Binding Volume, Mode=TwoWay}" />
+        <Label Grid.Row="2" Grid.Column="2" Text="origem ↔ destino (padrão do Slider)" FontSize="12" VerticalOptions="Center" />
+
+        <Label Grid.Row="3" Text="OneWayToSource" Style="{StaticResource Mono}" VerticalOptions="Center" />
+        <Slider Grid.Row="3" Grid.Column="1" Maximum="100" Value="{Binding Volume, Mode=OneWayToSource}" />
+        <Label Grid.Row="3" Grid.Column="2" Text="destino → origem" FontSize="12" VerticalOptions="Center" />
+
+        <Label Grid.Row="4" Text="OneTime" Style="{StaticResource Mono}" VerticalOptions="Center" />
+        <Slider Grid.Row="4" Grid.Column="1" Maximum="100" Value="{Binding Volume, Mode=OneTime}" />
+        <Label Grid.Row="4" Grid.Column="2" Text="só na criação (ou ao trocar o BindingContext)" FontSize="12" VerticalOptions="Center" />
+      </Grid>
+    </Border>
+
+    <!-- ===== 4 ===== -->
+    <Label Text="4. StringFormat" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Label Text="{Binding Price, StringFormat='Preço: {0:C}'}" />
+      <Label Text="{Binding Date, StringFormat='{0:dddd, dd MMMM yyyy}'}" />
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout>
+        <Label Text="{Binding Price, StringFormat='Preço: {0:C}'}" FontSize="18" />
+        <Label Text="{Binding Date, StringFormat='{0:dddd, dd MMMM yyyy}'}" FontSize="18" />
+      </VerticalStackLayout>
+    </Border>
+    <TipCard Kind="Nuance">
+      StringFormat usa a cultura atual do sistema (CultureInfo.CurrentCulture). Em pt-BR, {0:C} vira "R$ 1.234,50".
+    </TipCard>
+
+    <!-- ===== 5 ===== -->
+    <Label Text="5. Converters (IValueConverter)" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Um converter transforma o valor no caminho. Convert vai da origem para a tela; ConvertBack faz o caminho inverso nos bindings TwoWay. Arraste o slider OU digite em °F." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <ContentView.Resources>
+          <CelsiusToFahrenheitConverter x:Key="CToF" />
+      </ContentView.Resources>
+
+      <Slider Value="{Binding Celsius}" Minimum="-20" Maximum="50" />
+      <Entry Text="{Binding Celsius, Converter={StaticResource CToF}}" />
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <Grid ColumnDefinitions="*,Auto,140,Auto" ColumnSpacing="12">
+        <Slider Maximum="50" Minimum="-20" Value="{Binding Celsius}" VerticalOptions="Center" />
+        <Label Grid.Column="1" Text="{Binding Celsius, StringFormat='{0:F1} °C'}" VerticalOptions="Center" WidthRequest="80" />
+        <Entry Grid.Column="2" Text="{Binding Celsius, Converter={StaticResource CToF}}" Keyboard="Numeric" />
+        <Label Grid.Column="3" Text="°F" VerticalOptions="Center" />
+      </Grid>
+    </Border>
+
+    <!-- ===== 6 ===== -->
+    <Label Text="6. MultiBinding" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Label>
+          <Label.Text>
+              <MultiBinding Converter="{StaticResource FullName}">
+                  <Binding Path="Name" />
+                  <Binding Path="Surname" />
+              </MultiBinding>
+          </Label.Text>
+      </Label>
+      <!-- Para casos simples, StringFormat também funciona: -->
+      <MultiBinding StringFormat="{}{0} {1}"> … </MultiBinding>
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout>
+        <Label FontSize="18">
+          <Label.Text>
+            <MultiBinding Converter="{StaticResource FullName}">
+              <Binding Path="Name" />
+              <Binding Path="Surname" />
+            </MultiBinding>
+          </Label.Text>
+        </Label>
+        <Label FontSize="18">
+          <Label.Text>
+            <MultiBinding StringFormat="{}{1}, {0} (StringFormat)">
+              <Binding Path="Name" />
+              <Binding Path="Surname" />
+            </MultiBinding>
+          </Label.Text>
+        </Label>
+      </VerticalStackLayout>
+    </Border>
+
+    <!-- ===== 7 ===== -->
+    <Label Text="7. TargetNullValue e FallbackValue" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="TargetNullValue é usado quando a origem é null. FallbackValue, quando o binding não consegue obter um valor (ex.: sem BindingContext)." />
+    <Border Style="{StaticResource DemoArea}">
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+        <Entry Text="{Binding Nickname}" Placeholder="Digite um apelido (ou apague)" />
+        <Label Grid.Column="1" FontSize="18" VerticalOptions="Center"
+               Text="{Binding Nickname, TargetNullValue='(sem apelido)', StringFormat='Apelido: {0}'}" />
+      </Grid>
+    </Border>
+
+    <!-- ===== 8 ===== -->
+    <Label Text="8. RelativeSource" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="RelativeSource aponta a origem para algo relativo ao elemento: Self (o próprio elemento), AncestorType (um ancestral de um tipo) ou TemplatedParent (em ControlTemplates)." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <!-- Um quadrado perfeito: altura = largura -->
+      <BoxView WidthRequest="{Binding Value, Source={x:Reference w}}"
+               HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}}" />
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <HorizontalStackLayout Spacing="16">
+        <Slider x:Name="SizeSlider" Minimum="20" Maximum="140" Value="60" WidthRequest="200" VerticalOptions="Center" />
+        <BoxView Color="#2E9D5B"
+                 WidthRequest="{Binding Value, Source={x:Reference SizeSlider}, x:DataType=Slider}"
+                 HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=BoxView}" />
+      </HorizontalStackLayout>
+    </Border>
+
+    <!-- ===== 9 ===== -->
+    <Label Text="9. Compiled bindings e bindings em C#" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Com x:DataType, o XAML Source Generator gera código direto (sem reflexão) para cada binding: muito mais rápido, compatível com trimming/NativeAOT e com avisos no build quando algo não bate. Em C#, a forma moderna usa uma lambda:" />
+    <CodeBlock Language="csharp"><![CDATA[
+      // Compilado (sem reflexão) — .NET 9+
+      label.SetBinding(Label.TextProperty, static (BindingLessonViewModel vm) => vm.Greeting);
+
+      // Clássico (string, usa reflexão)
+      label.SetBinding(Label.TextProperty, new Binding(nameof(BindingLessonViewModel.Greeting)));
+    ]]></CodeBlock>
+    <TipCard Kind="Warning">
+      Sem x:DataType (ou com um nome de propriedade errado), os bindings ainda funcionam, mas via reflexão — lentos e frágeis. O XAML Source Generator emite avisos (ex.: MAUIG2045) para você corrigir. Trate esses avisos como erros!
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

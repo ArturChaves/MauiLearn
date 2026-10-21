@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  xmlns: namespaces XML que dizem ONDE estão os tipos.
+   • xmlns="http://schemas.microsoft.com/dotnet/maui/global" → MAUI + nossos namespaces (veja GlobalXmlns.cs)
+   • xmlns:x="...winfx/2009/xaml" → palavras-chave da linguagem (x:Name, x:Class, x:Key, x:DataType...)
+   • xmlns:sys="clr-namespace:System;assembly=System.Runtime" → tipos .NET via clr-namespace (estilo clássico)
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             x:Class="MauiLearn.Lessons.L04Xaml">
+
+  <ContentView.Resources>
+    <x:String x:Key="Saudacao">Olá, recurso!</x:String>
+    <x:Double x:Key="TamanhoGrande">28</x:Double>
+  </ContentView.Resources>
+
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="XAML (eXtensible Application Markup Language) é XML que descreve uma árvore de objetos. Cada ELEMENTO cria um objeto; cada ATRIBUTO define uma propriedade. Tudo que você faz em XAML também dá para fazer em C# — XAML só é mais legível para UI." />
+
+    <!-- ============ 1 ============ -->
+    <Label Text="1. Elementos e atributos" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <CodeBlock Language="xaml"><![CDATA[
+        <Label Text="Olá"
+               TextColor="Purple"
+               FontSize="20" />
+      ]]></CodeBlock>
+      <CodeBlock Grid.Column="1" Language="csharp"><![CDATA[
+        var label = new Label
+        {
+            Text = "Olá",
+            TextColor = Colors.Purple,
+            FontSize = 20,
+        };
+      ]]></CodeBlock>
+    </Grid>
+    <Border Style="{StaticResource DemoArea}">
+      <Label Text="Olá" TextColor="Purple" FontSize="20" />
+    </Border>
+
+    <!-- ============ 2 ============ -->
+    <Label Text="2. Type converters: strings que viram objetos" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Atributos são sempre texto. Quem transforma &quot;10,5&quot; em Thickness, &quot;#512BD4&quot; em Color ou &quot;Auto,*&quot; em linhas de Grid são os TypeConverters associados a cada tipo." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <!-- Color → ColorTypeConverter · Margin → ThicknessTypeConverter (horizontal,vertical) -->
+      <!-- HorizontalOptions → LayoutOptionsConverter · CornerRadius → CornerRadiusTypeConverter -->
+      <BoxView Color="#512BD4"
+               Margin="10,5"
+               HorizontalOptions="Start"
+               CornerRadius="10,0,10,0" />
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <BoxView Color="#512BD4" Margin="10,5" HorizontalOptions="Start" WidthRequest="120" HeightRequest="50" CornerRadius="10,0,10,0" />
+    </Border>
+
+    <!-- ============ 3 ============ -->
+    <Label Text="3. Property elements: quando o valor é um objeto complexo" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Se o valor não cabe numa string, use a sintaxe Tipo.Propriedade como elemento filho." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Border StrokeThickness="2">
+          <Border.Stroke>
+              <LinearGradientBrush EndPoint="1,0">
+                  <GradientStop Color="Purple" Offset="0" />
+                  <GradientStop Color="Orange" Offset="1" />
+              </LinearGradientBrush>
+          </Border.Stroke>
+          <Label Text="Gradiente no contorno" Padding="12" />
+      </Border>
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <Border StrokeThickness="4" HorizontalOptions="Start">
+        <Border.Stroke>
+          <LinearGradientBrush EndPoint="1,0">
+            <GradientStop Color="Purple" Offset="0" />
+            <GradientStop Color="Orange" Offset="1" />
+          </LinearGradientBrush>
+        </Border.Stroke>
+        <Label Text="Gradiente no contorno" Padding="12" />
+      </Border>
+    </Border>
+
+    <!-- ============ 4 ============ -->
+    <Label Text="4. Content property" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Cada classe pode marcar uma propriedade como [ContentProperty]. Filhos diretos vão para ela sem precisar escrever o property element. Em Border é Content; em layouts é Children; em Label é Text." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <!-- equivalentes -->
+      <Border><Border.Content><Label Text="A" /></Border.Content></Border>
+      <Border><Label Text="A" /></Border>
+
+      <Label>Texto como conteúdo (ContentProperty = Text)</Label>
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <Label>Texto como conteúdo (ContentProperty = Text)</Label>
+    </Border>
+
+    <!-- ============ 5 ============ -->
+    <Label Text="5. Propriedades anexadas (attached properties)" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="São propriedades definidas por OUTRA classe, mas 'anexadas' a um elemento. Ex.: Grid.Row não é uma propriedade de Label — é do Grid, que a lê para posicionar o filho." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Grid ColumnDefinitions="*,*">
+          <Label Text="Coluna 0" />
+          <Label Text="Coluna 1" Grid.Column="1" ToolTipProperties.Text="Sou um tooltip anexado" />
+      </Grid>
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <Grid ColumnDefinitions="*,*">
+        <Label Text="Coluna 0" BackgroundColor="#22512BD4" Padding="8" />
+        <Label Text="Coluna 1 (passe o mouse)" Grid.Column="1" BackgroundColor="#22D600AA" Padding="8" ToolTipProperties.Text="Sou um tooltip anexado" />
+      </Grid>
+    </Border>
+
+    <!-- ============ 6 ============ -->
+    <Label Text="6. Markup extensions: valores calculados entre { }" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Quando um atributo começa com { ele é uma markup extension: um objeto que FORNECE o valor. As principais:" />
+    <Grid ColumnDefinitions="Auto,*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="14">
+      <Label Text="{}{StaticResource Chave}" Style="{StaticResource Mono}" />
+      <Label Grid.Column="1" Text="Busca um recurso (uma vez)." FontSize="13" />
+      <Label Grid.Column="2" Text="{StaticResource Saudacao}" FontSize="{StaticResource TamanhoGrande}" />
+
+      <Label Grid.Row="1" Text="{}{x:Static sys:DateTime.Today}" Style="{StaticResource Mono}" />
+      <Label Grid.Row="1" Grid.Column="1" Text="Lê um campo/propriedade estática." FontSize="13" />
+      <Label Grid.Row="1" Grid.Column="2" Text="{Binding Source={x:Static sys:DateTime.Today}, StringFormat='Hoje: {0:dd/MM/yyyy}'}" />
+
+      <Label Grid.Row="2" Text="{}{x:Reference nome}" Style="{StaticResource Mono}" />
+      <Label Grid.Row="2" Grid.Column="1" Text="Referencia outro elemento (útil em bindings)." FontSize="13" />
+      <HorizontalStackLayout Grid.Row="2" Grid.Column="2" Spacing="8">
+        <Slider x:Name="ExtSlider" Maximum="100" WidthRequest="140" />
+        <Label Text="{Binding Value, Source={x:Reference ExtSlider}, StringFormat='{0:F0}'}" VerticalOptions="Center" />
+      </HorizontalStackLayout>
+
+      <Label Grid.Row="3" Text="{}{OnPlatform WinUI=…, MacCatalyst=…}" Style="{StaticResource Mono}" />
+      <Label Grid.Row="3" Grid.Column="1" Text="Valor diferente por plataforma." FontSize="13" />
+      <Label Grid.Row="3" Grid.Column="2" Text="{OnPlatform WinUI='Você está no Windows 🪟', MacCatalyst='Você está no Mac 🍎', Default='Outra plataforma'}" />
+
+      <Label Grid.Row="4" Text="{}{AppThemeBinding Light=…, Dark=…}" Style="{StaticResource Mono}" />
+      <Label Grid.Row="4" Grid.Column="1" Text="Valor por tema claro/escuro." FontSize="13" />
+      <Label Grid.Row="4" Grid.Column="2" Text="{AppThemeBinding Light='☀️ Tema claro', Dark='🌙 Tema escuro'}" />
+
+      <Label Grid.Row="5" Text="{}{OnIdiom Desktop=…, Phone=…}" Style="{StaticResource Mono}" />
+      <Label Grid.Row="5" Grid.Column="1" Text="Valor por tipo de dispositivo." FontSize="13" />
+      <Label Grid.Row="5" Grid.Column="2" Text="{OnIdiom Desktop='Idiom: Desktop 🖥️', Phone='Idiom: Phone', Tablet='Idiom: Tablet', Default='Idiom: outro'}" />
+
+      <Label Grid.Row="6" Text="{}{x:Null}  {x:Type}  {Binding}" Style="{StaticResource Mono}" />
+      <Label Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Nulo explícito, um System.Type, e o Binding (aula 07)." FontSize="13" />
+    </Grid>
+    <TipCard Kind="Nuance">
+      Para escrever um texto que começa com chave, escape com {} no início: Text="{}{isto não é markup}". Foi assim que os exemplos à esquerda foram escritos.
+    </TipCard>
+
+    <!-- ============ 7 ============ -->
+    <Label Text="7. x:Name e code-behind" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="x:Class liga o XAML a uma classe parcial C#. x:Name gera um campo nessa classe, acessível no code-behind depois de InitializeComponent(). Eventos são ligados pelo nome do método." />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Button x:Name="BotaoContar" Text="Contar" Clicked="OnContar" />
+    ]]></CodeBlock>
+    <CodeBlock Language="csharp"><![CDATA[
+      private int _total;
+      private void OnContar(object? sender, EventArgs e)
+      {
+          _total++;
+          BotaoContar.Text = $"Contei {_total}x";   // campo gerado pelo x:Name
+      }
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <Button x:Name="BotaoContar" Text="Contar" Clicked="OnContar" HorizontalOptions="Start" />
+    </Border>
+
+    <!-- ============ 8 ============ -->
+    <Label Text="8. Tipos primitivos, x:Array, x:Arguments e x:FactoryMethod" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <Picker Title="Escolha">
+          <Picker.ItemsSource>
+              <x:Array Type="{x:Type x:String}">
+                  <x:String>Café</x:String>
+                  <x:String>Chá</x:String>
+              </x:Array>
+          </Picker.ItemsSource>
+      </Picker>
+
+      <!-- Chamando um método de fábrica com argumentos: Color.FromRgb(214, 0, 170) -->
+      <BoxView>
+          <BoxView.Color>
+              <Color x:FactoryMethod="FromRgb">
+                  <x:Arguments>
+                      <x:Int32>214</x:Int32><x:Int32>0</x:Int32><x:Int32>170</x:Int32>
+                  </x:Arguments>
+              </Color>
+          </BoxView.Color>
+      </BoxView>
+    ]]></CodeBlock>
+    <Border Style="{StaticResource DemoArea}">
+      <HorizontalStackLayout Spacing="16">
+        <Picker Title="Escolha" WidthRequest="160">
+          <Picker.ItemsSource>
+            <x:Array Type="{x:Type x:String}">
+              <x:String>Café</x:String>
+              <x:String>Chá</x:String>
+              <x:String>Suco</x:String>
+            </x:Array>
+          </Picker.ItemsSource>
+        </Picker>
+        <BoxView WidthRequest="50" HeightRequest="50" CornerRadius="25">
+          <BoxView.Color>
+            <Color x:FactoryMethod="FromRgb">
+              <x:Arguments>
+                <x:Int32>214</x:Int32>
+                <x:Int32>0</x:Int32>
+                <x:Int32>170</x:Int32>
+              </x:Arguments>
+            </Color>
+          </BoxView.Color>
+        </BoxView>
+      </HorizontalStackLayout>
+    </Border>
+
+    <!-- ============ 9 ============ -->
+    <Label Text="9. Namespaces: global × clr-namespace" Style="{StaticResource H2}" />
+    <CodeBlock Language="xaml"><![CDATA[
+      <!-- Clássico: um prefixo por namespace C# -->
+      <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                   xmlns:controls="clr-namespace:MeuApp.Controls">
+          <controls:CartaoPerfil />
+      </ContentPage>
+
+      <!-- .NET MAUI 10+: xmlns global (registre com [assembly: XmlnsDefinition(...)]) -->
+      <ContentPage xmlns="http://schemas.microsoft.com/dotnet/maui/global">
+          <CartaoPerfil />
+      </ContentPage>
+    ]]></CodeBlock>
+    <TipCard Kind="New">
+      Este app inteiro usa o xmlns global — veja GlobalXmlns.cs. Por isso escrevemos &lt;TipCard&gt; e &lt;CodeBlock&gt; sem prefixo.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

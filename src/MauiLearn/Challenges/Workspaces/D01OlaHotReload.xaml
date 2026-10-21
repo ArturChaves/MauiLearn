@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  DESAFIO 01 — Olá, Hot Reload!                               ║
+  ╚══════════════════════════════════════════════════════════════╝
+  Com o app rodando em Debug e este desafio aberto:
+    1. Mude o Text do Label para:  Olá, MAUI!
+    2. Aumente o FontSize para 32 ou mais.
+    3. Mude o TextColor para #512BD4.
+  Salve o arquivo (Ctrl/⌘+S), veja a mudança e clique em "Verificar".
+  ⚠️ Não remova o x:Name="Titulo" — a verificação usa esse nome.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D01OlaHotReload">
+
+  <Label x:Name="Titulo"
+         Text="Mude-me!"
+         FontSize="14"
+         TextColor="Gray"
+         HorizontalOptions="Center"
+         VerticalOptions="Center" />
+
+</ContentView>

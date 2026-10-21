@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 07 — Estilo reutilizável
+  Os três Labels repetem os mesmos atributos. Elimine a repetição:
+    1. Crie um Style com x:Key="Destaque" e TargetType="Label" em <ContentView.Resources>,
+       com Setters para TextColor, FontSize e FontAttributes.
+    2. Aplique Style="{StaticResource Destaque}" nos três Labels (L1, L2, L3).
+    3. Remova os atributos repetidos dos Labels.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D07Estilo">
+
+  <ContentView.Resources>
+    <!-- Crie o Style aqui -->
+  </ContentView.Resources>
+
+  <VerticalStackLayout Spacing="10" VerticalOptions="Center" HorizontalOptions="Center">
+    <Label x:Name="L1" Text="Primeiro" TextColor="#D600AA" FontSize="22" FontAttributes="Bold" />
+    <Label x:Name="L2" Text="Segundo" TextColor="#D600AA" FontSize="22" FontAttributes="Bold" />
+    <Label x:Name="L3" Text="Terceiro" TextColor="#D600AA" FontSize="22" FontAttributes="Bold" />
+  </VerticalStackLayout>
+
+</ContentView>

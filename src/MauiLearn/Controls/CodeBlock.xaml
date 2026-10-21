@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Controle customizado (ContentView) com BindableProperties próprias: Code, Language, Title.
+  Code é a ContentProperty, então o código pode ir como conteúdo (use CDATA para XAML):
+    <CodeBlock Language="xaml"><![CDATA[ <Button Text="Oi" /> ]]></CodeBlock>
+  Por isso, aqui dentro precisamos usar <ContentView.Content> explicitamente.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Controls.CodeBlock"
+             x:Name="root"
+             x:DataType="CodeBlock">
+  <ContentView.Content>
+  <Border Padding="0" StrokeShape="RoundRectangle 10"
+          BackgroundColor="{AppThemeBinding Light={StaticResource CodeBackgroundLight}, Dark={StaticResource CodeBackgroundDark}}">
+    <Grid RowDefinitions="Auto,*">
+      <Grid ColumnDefinitions="*,Auto" Padding="12,6,6,6"
+            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+        <Label Text="{Binding Title, Source={x:Reference root}}" Style="{StaticResource Caption}" VerticalOptions="Center" />
+        <Button x:Name="CopyButton" Grid.Column="1" Text="Copiar" FontSize="11" Padding="10,2"
+                MinimumHeightRequest="24" Style="{StaticResource SecondaryButton}"
+                Clicked="OnCopyClicked" ToolTipProperties.Text="Copiar para a área de transferência" />
+      </Grid>
+      <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Default">
+        <Label x:Name="CodeLabel" Padding="14,10" Style="{StaticResource Mono}" LineBreakMode="NoWrap" />
+      </ScrollView>
+    </Grid>
+  </Border>
+  </ContentView.Content>
+</ContentView>

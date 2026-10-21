@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L15Graficos">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="O MAUI tem três níveis de 'desenho': Shapes (Views vetoriais declarativas), Brushes/Shadow/Clip (aplicáveis a qualquer elemento) e GraphicsView (desenho livre com código)." />
+
+    <!-- ===== 1 ===== -->
+    <Label Text="1. Shapes" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <HorizontalStackLayout Spacing="22">
+        <Rectangle Fill="#512BD4" WidthRequest="90" HeightRequest="60" RadiusX="10" RadiusY="10" />
+        <Ellipse Fill="#D600AA" WidthRequest="70" HeightRequest="70" />
+        <Line X1="0" Y1="60" X2="80" Y2="0" Stroke="#2E9D5B" StrokeThickness="5" StrokeLineCap="Round" />
+        <Polyline Points="0,50 20,10 40,40 60,0 80,30" Stroke="#E59A12" StrokeThickness="4" />
+        <Polygon Points="35,0 70,70 0,70" Fill="#2F80ED" />
+        <Path Data="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              Fill="Gold" Stroke="DarkOrange" Aspect="Uniform" HeightRequest="70" WidthRequest="70" />
+      </HorizontalStackLayout>
+    </Border>
+    <CodeBlock Language="xaml"><![CDATA[
+      <Rectangle Fill="#512BD4" WidthRequest="90" HeightRequest="60" RadiusX="10" RadiusY="10" />
+      <Ellipse Fill="#D600AA" WidthRequest="70" HeightRequest="70" />
+      <Line X1="0" Y1="60" X2="80" Y2="0" Stroke="#2E9D5B" StrokeThickness="5" />
+      <Polygon Points="35,0 70,70 0,70" Fill="#2F80ED" />
+      <Path Data="M12 2l3.09 6.26L22 9.27 …Z" Fill="Gold" Aspect="Uniform" />
+    ]]></CodeBlock>
+
+    <!-- ===== 2 ===== -->
+    <Label Text="2. 🧪 Laboratório de gradiente" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="300,*" ColumnSpacing="16">
+      <VerticalStackLayout Spacing="4">
+        <Label Text="StartPoint X / Y" FontSize="13" />
+        <Slider x:Name="StartX" Maximum="1" ValueChanged="OnGradientChanged" />
+        <Slider x:Name="StartY" Maximum="1" ValueChanged="OnGradientChanged" />
+        <Label Text="EndPoint X / Y" FontSize="13" />
+        <Slider x:Name="EndX" Maximum="1" Value="1" ValueChanged="OnGradientChanged" />
+        <Slider x:Name="EndY" Maximum="1" Value="1" ValueChanged="OnGradientChanged" />
+        <Label Text="Offset da cor do meio" FontSize="13" />
+        <Slider x:Name="MidOffset" Maximum="1" Value="0.5" ValueChanged="OnGradientChanged" />
+      </VerticalStackLayout>
+      <VerticalStackLayout Grid.Column="1" Spacing="8">
+        <Border x:Name="GradientBox" HeightRequest="150" StrokeShape="RoundRectangle 16" StrokeThickness="0" />
+        <CodeBlock x:Name="GradientCode" Language="xaml" />
+      </VerticalStackLayout>
+    </Grid>
+
+    <!-- ===== 3 ===== -->
+    <Label Text="3. 🧪 Laboratório de sombra" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="300,*" ColumnSpacing="16">
+      <VerticalStackLayout Spacing="4">
+        <Label Text="Radius (desfoque)" FontSize="13" />
+        <Slider x:Name="ShadowRadius" Maximum="40" Value="12" ValueChanged="OnShadowChanged" />
+        <Label Text="Offset X / Y" FontSize="13" />
+        <Slider x:Name="ShadowX" Minimum="-20" Maximum="20" Value="6" ValueChanged="OnShadowChanged" />
+        <Slider x:Name="ShadowY" Minimum="-20" Maximum="20" Value="6" ValueChanged="OnShadowChanged" />
+        <Label Text="Opacity" FontSize="13" />
+        <Slider x:Name="ShadowOpacity" Maximum="1" Value="0.4" ValueChanged="OnShadowChanged" />
+      </VerticalStackLayout>
+      <Grid Grid.Column="1" Padding="30" HeightRequest="200">
+        <Border x:Name="ShadowBox" WidthRequest="220" HeightRequest="120" BackgroundColor="White"
+                StrokeShape="RoundRectangle 16" StrokeThickness="0">
+          <Label Text="Cartão com sombra" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Border>
+      </Grid>
+    </Grid>
+
+    <!-- ===== 4 ===== -->
+    <Label Text="4. Clip: recortando com geometria" Style="{StaticResource H2}" />
+    <Border Style="{StaticResource DemoArea}">
+      <HorizontalStackLayout Spacing="24">
+        <Image Source="sample_landscape.png" WidthRequest="140" HeightRequest="140" Aspect="AspectFill">
+          <Image.Clip>
+            <EllipseGeometry Center="70,70" RadiusX="70" RadiusY="70" />
+          </Image.Clip>
+        </Image>
+        <Image Source="sample_landscape.png" WidthRequest="200" HeightRequest="140" Aspect="AspectFill">
+          <Image.Clip>
+            <RoundRectangleGeometry Rect="0,0,200,140" CornerRadius="30" />
+          </Image.Clip>
+        </Image>
+      </HorizontalStackLayout>
+    </Border>
+
+    <!-- ===== 5 ===== -->
+    <Label Text="5. GraphicsView: desenhando com código" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Implemente IDrawable e desenhe no ICanvas. Mova os sliders: os valores mudam e chamamos Invalidate() para redesenhar." />
+    <Grid ColumnDefinitions="220,*" ColumnSpacing="16">
+      <VerticalStackLayout x:Name="BarSliders" Spacing="2" />
+      <Border Style="{StaticResource DemoArea}" Padding="4">
+        <GraphicsView x:Name="Chart" HeightRequest="240" />
+      </Border>
+    </Grid>
+    <CodeBlock Language="csharp" Title="Lessons/BarChartDrawable.cs (trecho)"><![CDATA[
+      public void Draw(ICanvas canvas, RectF rect)
+      {
+          foreach (var (valor, i) in Values.Select((v, i) => (v, i)))
+          {
+              var h = (float)(valor / max * chart.Height);
+              canvas.FillColor = Colors.Purple;
+              canvas.FillRoundedRectangle(x, chart.Bottom - h, largura, h, 6);
+              canvas.DrawString(valor.ToString(), x, chart.Bottom - h - 18, largura, 16,
+                                HorizontalAlignment.Center, VerticalAlignment.Bottom);
+          }
+      }
+      // Para redesenhar: graphicsView.Invalidate();
+    ]]></CodeBlock>
+    <TipCard Kind="Tip">
+      No catálogo, o componente GraphicsView tem um demo de desenho livre com o mouse (eventos StartInteraction/DragInteraction e hover).
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

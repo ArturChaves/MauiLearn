@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AppPage xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+         x:Class="MauiLearn.Pages.SettingsPage"
+         Title="Configurações">
+
+  <ScrollView>
+    <VerticalStackLayout Padding="32,24" Spacing="16" MaximumWidthRequest="900" HorizontalOptions="Start">
+      <Label Text="Configurações" Style="{StaticResource H1}" />
+
+      <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="8">
+          <Label Text="🎨 Tema" Style="{StaticResource H3}" Margin="0" />
+          <!-- RadioButtonGroup no pai: um só grupo para os três botões -->
+          <HorizontalStackLayout x:Name="ThemeGroup" Spacing="16" RadioButtonGroup.GroupName="theme">
+            <RadioButton x:Name="ThemeSystem" Content="Seguir o sistema" CheckedChanged="OnThemeChanged" />
+            <RadioButton x:Name="ThemeLight" Content="Claro" CheckedChanged="OnThemeChanged" />
+            <RadioButton x:Name="ThemeDark" Content="Escuro" CheckedChanged="OnThemeChanged" />
+          </HorizontalStackLayout>
+          <Label Style="{StaticResource Caption}"
+                 Text="Application.UserAppTheme sobrescreve o tema do sistema. Todos os AppThemeBinding do app reagem na hora." />
+        </VerticalStackLayout>
+      </Border>
+
+      <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="8">
+          <Label Text="🪟 Janelas" Style="{StaticResource H3}" Margin="0" />
+          <Button Text="Abrir uma nova janela do MauiLearn" Clicked="OnNewWindow" HorizontalOptions="Start" />
+          <Label x:Name="WindowInfo" Style="{StaticResource Caption}" />
+        </VerticalStackLayout>
+      </Border>
+
+      <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="8">
+          <Label Text="📈 Progresso" Style="{StaticResource H3}" Margin="0" />
+          <Label x:Name="ProgressInfo" />
+          <Button Text="Zerar progresso (aulas, desafios e favoritos)" Clicked="OnReset"
+                  BackgroundColor="{StaticResource Danger}" HorizontalOptions="Start" />
+        </VerticalStackLayout>
+      </Border>
+
+      <Border Style="{StaticResource Card}">
+        <VerticalStackLayout Spacing="4">
+          <Label Text="💻 Ambiente (MAUI Essentials)" Style="{StaticResource H3}" Margin="0" />
+          <Label x:Name="EnvInfo" Style="{StaticResource Mono}" />
+        </VerticalStackLayout>
+      </Border>
+    </VerticalStackLayout>
+  </ScrollView>
+</AppPage>

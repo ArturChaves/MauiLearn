@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 09 — Lista em grade
+  A CollectionView mostra os itens em lista. Transforme-a numa GRADE de 3 colunas
+  e dê um visual de cartão a cada item:
+    1. ItemsLayout="VerticalGrid, 3"
+    2. No DataTemplate, envolva o Label num <Border Padding="12" Margin="4"> … </Border>
+    3. Bônus: SelectionMode="Single"
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D09ListaGrade">
+
+  <CollectionView x:Name="Lista">
+    <CollectionView.ItemsSource>
+      <x:Array Type="{x:Type x:String}">
+        <x:String>🍎 Maçã</x:String>
+        <x:String>🍌 Banana</x:String>
+        <x:String>🍇 Uva</x:String>
+        <x:String>🍊 Laranja</x:String>
+        <x:String>🍓 Morango</x:String>
+        <x:String>🍍 Abacaxi</x:String>
+        <x:String>🍉 Melancia</x:String>
+        <x:String>🥝 Kiwi</x:String>
+        <x:String>🍒 Cereja</x:String>
+      </x:Array>
+    </CollectionView.ItemsSource>
+    <CollectionView.ItemTemplate>
+      <DataTemplate x:DataType="x:String">
+        <Label Text="{Binding .}" FontSize="18" Padding="8" />
+      </DataTemplate>
+    </CollectionView.ItemTemplate>
+  </CollectionView>
+
+</ContentView>

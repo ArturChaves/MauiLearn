@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 10 — Hover no desktop
+  Faça o cartão reagir ao mouse com o VisualStateManager:
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup Name="CommonStates">
+            <VisualState Name="Normal" />
+            <VisualState Name="PointerOver">
+                <VisualState.Setters>
+                    <Setter Property="BackgroundColor" Value="#512BD4" />
+                    <Setter Property="Scale" Value="1.05" />
+                </VisualState.Setters>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+  Coloque isso DENTRO do <Border x:Name="Card">. Passe o mouse para testar!
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D10Hover">
+
+  <Border x:Name="Card"
+          WidthRequest="260" HeightRequest="140"
+          HorizontalOptions="Center" VerticalOptions="Center"
+          BackgroundColor="#33512BD4"
+          StrokeShape="RoundRectangle 16">
+    <Label Text="Passe o mouse aqui" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18" />
+  </Border>
+
+</ContentView>

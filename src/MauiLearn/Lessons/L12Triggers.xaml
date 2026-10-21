@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Lessons.L12Triggers">
+  <VerticalStackLayout Spacing="10">
+
+    <Label Style="{StaticResource Body}"
+           Text="Triggers, Behaviors e o VisualStateManager permitem mudar aparência e comportamento de forma declarativa — sem encher o code-behind de ifs." />
+
+    <!-- ===== 1 ===== -->
+    <Label Text="1. Property Trigger" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}" Text="Reage a uma propriedade do PRÓPRIO controle. Clique na Entry:" />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <CodeBlock Language="xaml"><![CDATA[
+        <Entry Placeholder="Clique aqui">
+            <Entry.Triggers>
+                <Trigger TargetType="Entry" Property="IsFocused" Value="True">
+                    <Setter Property="BackgroundColor" Value="#FFF3C4" />
+                    <Setter Property="FontSize" Value="20" />
+                </Trigger>
+            </Entry.Triggers>
+        </Entry>
+      ]]></CodeBlock>
+      <Border Grid.Column="1" Style="{StaticResource DemoArea}">
+        <Entry Placeholder="Clique aqui" VerticalOptions="Center">
+          <Entry.Triggers>
+            <Trigger TargetType="Entry" Property="IsFocused" Value="True">
+              <Setter Property="BackgroundColor" Value="#FFF3C4" />
+              <Setter Property="FontSize" Value="20" />
+            </Trigger>
+          </Entry.Triggers>
+        </Entry>
+      </Border>
+    </Grid>
+
+    <!-- ===== 2 ===== -->
+    <Label Text="2. DataTrigger" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}" Text="Reage a um BINDING — pode observar outro controle ou o ViewModel. O botão só habilita com texto:" />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <CodeBlock Language="xaml"><![CDATA[
+        <Entry x:Name="nome" Placeholder="Nome" />
+        <Button Text="Enviar">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button"
+                             Binding="{Binding Text.Length, Source={x:Reference nome}}"
+                             Value="0">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+      ]]></CodeBlock>
+      <Border Grid.Column="1" Style="{StaticResource DemoArea}">
+        <VerticalStackLayout Spacing="8">
+          <Entry x:Name="NameEntry" Placeholder="Nome" Text="" />
+          <Button Text="Enviar">
+            <Button.Triggers>
+              <DataTrigger TargetType="Button" Binding="{Binding Text.Length, Source={x:Reference NameEntry}, x:DataType=Entry}" Value="0">
+                <Setter Property="IsEnabled" Value="False" />
+              </DataTrigger>
+            </Button.Triggers>
+          </Button>
+        </VerticalStackLayout>
+      </Border>
+    </Grid>
+    <TipCard Kind="Nuance">
+      Inicialize Text="" na Entry: se Text for null, Text.Length não existe e o DataTrigger não dispara no começo.
+    </TipCard>
+
+    <!-- ===== 3 ===== -->
+    <Label Text="3. MultiTrigger" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}" Text="Todas as condições precisam ser verdadeiras. Marque as duas caixas:" />
+    <Border Style="{StaticResource DemoArea}">
+      <VerticalStackLayout Spacing="6">
+        <HorizontalStackLayout Spacing="6">
+          <CheckBox x:Name="TermsCheck" />
+          <Label Text="Li os termos" VerticalOptions="Center" />
+          <CheckBox x:Name="AgeCheck" Margin="20,0,0,0" />
+          <Label Text="Tenho 18+ anos" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+        <Label Text="🔒 Bloqueado" FontSize="20">
+          <Label.Triggers>
+            <MultiTrigger TargetType="Label">
+              <MultiTrigger.Conditions>
+                <BindingCondition Binding="{Binding IsChecked, Source={x:Reference TermsCheck}, x:DataType=CheckBox}" Value="True" />
+                <BindingCondition Binding="{Binding IsChecked, Source={x:Reference AgeCheck}, x:DataType=CheckBox}" Value="True" />
+              </MultiTrigger.Conditions>
+              <Setter Property="Text" Value="🔓 Liberado!" />
+              <Setter Property="TextColor" Value="{StaticResource Success}" />
+            </MultiTrigger>
+          </Label.Triggers>
+        </Label>
+      </VerticalStackLayout>
+    </Border>
+
+    <!-- ===== 4 ===== -->
+    <Label Text="4. EventTrigger + TriggerAction" Style="{StaticResource H2}" />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <CodeBlock Language="xaml"><![CDATA[
+        <Button Text="Me chacoalhe">
+            <Button.Triggers>
+                <EventTrigger Event="Clicked">
+                    <ShakeTriggerAction />
+                </EventTrigger>
+            </Button.Triggers>
+        </Button>
+      ]]></CodeBlock>
+      <Border Grid.Column="1" Style="{StaticResource DemoArea}">
+        <Button Text="Me chacoalhe" HorizontalOptions="Center" VerticalOptions="Center">
+          <Button.Triggers>
+            <EventTrigger Event="Clicked">
+              <ShakeTriggerAction />
+            </EventTrigger>
+          </Button.Triggers>
+        </Button>
+      </Border>
+    </Grid>
+
+    <!-- ===== 5 ===== -->
+    <Label Text="5. Behaviors" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Um Behavior se 'anexa' a um controle e assina seus eventos. Reutilizável em qualquer Entry. Digite letras:" />
+    <Border Style="{StaticResource DemoArea}">
+      <Entry Placeholder="Apenas números" WidthRequest="260" HorizontalOptions="Start">
+        <Entry.Behaviors>
+          <NumericValidationBehavior />
+        </Entry.Behaviors>
+      </Entry>
+    </Border>
+    <CodeBlock Language="csharp" Title="Lessons/TriggerSupport.cs (trecho)"><![CDATA[
+      public class NumericValidationBehavior : Behavior<Entry>
+      {
+          protected override void OnAttachedTo(Entry entry)
+          {
+              base.OnAttachedTo(entry);
+              entry.TextChanged += OnTextChanged;
+          }
+
+          protected override void OnDetachingFrom(Entry entry)
+          {
+              entry.TextChanged -= OnTextChanged;
+              base.OnDetachingFrom(entry);
+          }
+
+          private void OnTextChanged(object? sender, TextChangedEventArgs e) =>
+              ((Entry)sender!).TextColor = double.TryParse(e.NewTextValue, out _) ? null : Colors.Red;
+      }
+    ]]></CodeBlock>
+
+    <!-- ===== 6 ===== -->
+    <Label Text="6. VisualStateManager (VSM)" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="Controles têm estados visuais: Normal, Disabled, Focused, PointerOver (hover no desktop) e Selected (itens de coleção). O VSM define setters por estado. Você também pode criar estados próprios e ativá-los com VisualStateManager.GoToState." />
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <CodeBlock Language="xaml"><![CDATA[
+        <Border Padding="20">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal" />
+                    <VisualState Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#512BD4" />
+                            <Setter Property="Scale" Value="1.05" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+                <VisualStateGroup Name="Humor">
+                    <VisualState Name="Feliz"> … </VisualState>
+                    <VisualState Name="Triste"> … </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+        </Border>
+      ]]></CodeBlock>
+      <Border Grid.Column="1" Style="{StaticResource DemoArea}">
+        <VerticalStackLayout Spacing="10">
+          <Border x:Name="MoodCard" Padding="20" StrokeShape="RoundRectangle 14" BackgroundColor="#22512BD4">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup Name="CommonStates">
+                <VisualState Name="Normal" />
+                <VisualState Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Property="Scale" Value="1.05" />
+                    <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup Name="Humor">
+                <VisualState Name="Feliz">
+                  <VisualState.Setters>
+                    <Setter Property="BackgroundColor" Value="#552E9D5B" />
+                    <Setter TargetName="MoodLabel" Property="Label.Text" Value="😄 Feliz (estado customizado)" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState Name="Triste">
+                  <VisualState.Setters>
+                    <Setter Property="BackgroundColor" Value="#552F80ED" />
+                    <Setter TargetName="MoodLabel" Property="Label.Text" Value="😢 Triste (estado customizado)" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Label x:Name="MoodLabel" Text="Passe o mouse (PointerOver)" HorizontalOptions="Center" />
+          </Border>
+          <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+            <Button Text="GoToState(Feliz)" Clicked="OnHappy" />
+            <Button Text="GoToState(Triste)" Clicked="OnSad" Style="{StaticResource SecondaryButton}" />
+          </HorizontalStackLayout>
+        </VerticalStackLayout>
+      </Border>
+    </Grid>
+    <TipCard Kind="Nuance">
+      Grupos são independentes: o card pode estar em PointerOver (grupo CommonStates) e Feliz (grupo Humor) ao mesmo tempo. Dentro de um grupo, só um estado fica ativo.
+    </TipCard>
+
+    <!-- ===== 7 ===== -->
+    <Label Text="7. Layout responsivo com AdaptiveTrigger" Style="{StaticResource H2}" />
+    <Label Style="{StaticResource Body}"
+           Text="State triggers ativam estados automaticamente. AdaptiveTrigger usa a LARGURA DA JANELA — perfeito para desktop. Redimensione a janela (acima/abaixo de 1200 de largura) e veja o painel mudar de orientação:" />
+    <Border Style="{StaticResource DemoArea}">
+      <StackLayout x:Name="AdaptivePanel" Spacing="10">
+        <VisualStateManager.VisualStateGroups>
+          <VisualStateGroup Name="Tamanho">
+            <VisualState Name="Larga">
+              <VisualState.StateTriggers>
+                <AdaptiveTrigger MinWindowWidth="1200" />
+              </VisualState.StateTriggers>
+              <VisualState.Setters>
+                <Setter Property="Orientation" Value="Horizontal" />
+              </VisualState.Setters>
+            </VisualState>
+            <VisualState Name="Estreita">
+              <VisualState.StateTriggers>
+                <AdaptiveTrigger MinWindowWidth="0" />
+              </VisualState.StateTriggers>
+              <VisualState.Setters>
+                <Setter Property="Orientation" Value="Vertical" />
+              </VisualState.Setters>
+            </VisualState>
+          </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <BoxView Color="#512BD4" WidthRequest="120" HeightRequest="50" CornerRadius="8" />
+        <BoxView Color="#D600AA" WidthRequest="120" HeightRequest="50" CornerRadius="8" />
+        <BoxView Color="#2E9D5B" WidthRequest="120" HeightRequest="50" CornerRadius="8" />
+      </StackLayout>
+    </Border>
+    <TipCard Kind="Info">
+      Outros StateTriggers: StateTrigger (IsActive bindável), CompareStateTrigger (compara um valor), DeviceStateTrigger e OrientationStateTrigger.
+    </TipCard>
+  </VerticalStackLayout>
+</ContentView>

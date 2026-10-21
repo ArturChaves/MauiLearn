@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Moldura comum de todas as aulas: cabeçalho, conteúdo (ContentView da aula), quiz e navegação. -->
+<AppPage xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+         x:Class="MauiLearn.Pages.LessonHostPage"
+         Title="Aula">
+
+  <Grid RowDefinitions="*,Auto">
+    <ScrollView x:Name="Scroll">
+      <VerticalStackLayout Padding="40,24,40,40" Spacing="8" MaximumWidthRequest="1000">
+
+        <HorizontalStackLayout Spacing="10">
+          <Label x:Name="NumberLabel" Style="{StaticResource ChipLabel}" VerticalOptions="Center" />
+          <Label x:Name="MetaLabel" Style="{StaticResource Caption}" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout Spacing="12">
+          <Label x:Name="IconLabel" FontSize="40" VerticalOptions="Center" />
+          <Label x:Name="TitleLabel" Style="{StaticResource H1}" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+        <Label x:Name="SummaryLabel" FontSize="16" Opacity="0.85" Margin="0,0,0,8" />
+
+        <!-- Conteúdo da aula (um ContentView de Lessons/*.xaml) -->
+        <ContentView x:Name="LessonContent" />
+
+        <!-- Componentes relacionados -->
+        <VerticalStackLayout x:Name="RelatedSection" Spacing="6" IsVisible="False">
+          <Label Text="🧩 Explore no catálogo" Style="{StaticResource H2}" />
+          <FlexLayout x:Name="RelatedChips" Wrap="Wrap" />
+        </VerticalStackLayout>
+
+        <!-- Quiz -->
+        <VerticalStackLayout x:Name="QuizSection" Spacing="8" IsVisible="False">
+          <Label Text="📝 Teste seus conhecimentos" Style="{StaticResource H2}" />
+          <VerticalStackLayout x:Name="QuizHost" Spacing="14" />
+          <Label x:Name="QuizScore" FontAttributes="Bold" />
+        </VerticalStackLayout>
+      </VerticalStackLayout>
+    </ScrollView>
+
+    <!-- Barra inferior -->
+    <Border Grid.Row="1" StrokeThickness="0" Padding="24,10" StrokeShape="Rectangle"
+            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+        <Button x:Name="PrevButton" Text="◀ Anterior" Clicked="OnPrev" Style="{StaticResource SecondaryButton}" />
+        <HorizontalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="8">
+          <CheckBox x:Name="DoneCheck" CheckedChanged="OnDoneChanged" VerticalOptions="Center" />
+          <Label Text="Marcar aula como concluída" VerticalOptions="Center">
+            <Label.GestureRecognizers>
+              <TapGestureRecognizer Tapped="OnDoneLabelTapped" />
+            </Label.GestureRecognizers>
+          </Label>
+        </HorizontalStackLayout>
+        <Button x:Name="TopButton" Grid.Column="2" Text="▲ Topo" Clicked="OnTop" Style="{StaticResource SecondaryButton}" />
+        <Button x:Name="NextButton" Grid.Column="3" Text="Próxima ▶" Clicked="OnNext" />
+      </Grid>
+    </Border>
+  </Grid>
+</AppPage>

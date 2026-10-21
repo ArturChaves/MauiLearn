@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AppPage xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+         x:Class="MauiLearn.Pages.LessonsPage"
+         x:DataType="LessonsPage"
+         Title="Aulas">
+
+  <Grid RowDefinitions="Auto,Auto,*" Padding="28,20,28,0" RowSpacing="10">
+    <VerticalStackLayout Spacing="2">
+      <Label Text="Aulas" Style="{StaticResource H1}" />
+      <Label Text="Uma trilha do zero ao avançado. Cada aula tem explicação, exemplos AO VIVO, código e um quiz no final."
+             Style="{StaticResource Caption}" />
+    </VerticalStackLayout>
+
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+      <ProgressBar x:Name="Progress" VerticalOptions="Center" />
+      <Label x:Name="ProgressText" Grid.Column="1" Style="{StaticResource Caption}" VerticalOptions="Center" />
+    </Grid>
+
+    <CollectionView x:Name="List" Grid.Row="2" SelectionMode="Single" SelectionChanged="OnSelected">
+      <CollectionView.ItemsLayout>
+        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+      </CollectionView.ItemsLayout>
+      <CollectionView.ItemTemplate>
+        <DataTemplate x:DataType="LessonRow">
+          <Border Style="{StaticResource Card}" Padding="16,12">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup Name="CommonStates">
+                <VisualState Name="Normal" />
+                <VisualState Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Grid ColumnDefinitions="56,Auto,*,Auto" ColumnSpacing="14">
+              <Label Text="{Binding Info.NumberText}" FontSize="26" FontAttributes="Bold" Opacity="0.35" VerticalOptions="Center" />
+              <Label Grid.Column="1" Text="{Binding Info.Icon}" FontSize="28" VerticalOptions="Center" />
+              <VerticalStackLayout Grid.Column="2" Spacing="2" VerticalOptions="Center">
+                <Label Text="{Binding Info.Title}" FontAttributes="Bold" FontSize="16" />
+                <Label Text="{Binding Info.Summary}" FontSize="13" Opacity="0.8" />
+                <Label Text="{Binding Info.Meta}" Style="{StaticResource Caption}" />
+              </VerticalStackLayout>
+              <Label Grid.Column="3" Text="{Binding Done, Converter={StaticResource DoneGlyph}}" FontSize="22" VerticalOptions="Center"
+                     ToolTipProperties.Text="{Binding Done, Converter={StaticResource BoolToText}, ConverterParameter='Concluída|Não concluída'}" />
+            </Grid>
+          </Border>
+        </DataTemplate>
+      </CollectionView.ItemTemplate>
+      <CollectionView.Footer>
+        <BoxView HeightRequest="24" Color="Transparent" />
+      </CollectionView.Footer>
+    </CollectionView>
+  </Grid>
+</AppPage>

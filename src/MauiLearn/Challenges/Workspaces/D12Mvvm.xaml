@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 12 — MVVM: ligue o contador
+  O code-behind já define BindingContext = new CounterViewModel() (veja ViewModels/MvvmLessonViewModels.cs).
+  A tela ainda não está ligada ao ViewModel. Faça os bindings:
+    1. Label "Contagem":  Text="{Binding Count}"
+    2. Button "Mais":     Command="{Binding IncrementCommand}"
+    3. Button "Menos":    Command="{Binding DecrementCommand}"  (repare que ele desabilita sozinho em 0!)
+  Repare no x:DataType: os bindings são compilados contra CounterViewModel.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D12Mvvm"
+             x:DataType="CounterViewModel">
+
+  <VerticalStackLayout Spacing="14" VerticalOptions="Center" HorizontalOptions="Center">
+    <Label x:Name="Contagem" Text="0" FontSize="56" HorizontalOptions="Center" />
+    <HorizontalStackLayout Spacing="10">
+      <Button x:Name="Menos" Text="−" WidthRequest="70" />
+      <Button x:Name="Mais" Text="+" WidthRequest="70" />
+    </HorizontalStackLayout>
+  </VerticalStackLayout>
+
+</ContentView>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  O "laboratório" de um componente:
+   • esquerda: cabeçalho, PRÉVIA AO VIVO e abas (Sobre, Propriedades, Nuances, Código, Eventos)
+   • direita: Inspetor de Propriedades (todas as BindableProperties, editáveis)
+-->
+<AppPage xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+         x:Class="MauiLearn.Pages.ComponentDetailPage"
+         Title="Componente">
+
+  <AppPage.ToolbarItems>
+    <ToolbarItem x:Name="FavoriteItem" Text="☆ Favoritar" Clicked="OnFavoriteClicked" />
+  </AppPage.ToolbarItems>
+
+  <Grid ColumnDefinitions="*,460">
+
+    <!-- ================= Coluna esquerda ================= -->
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="24,16,16,0" RowSpacing="12">
+
+      <!-- Cabeçalho -->
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+        <Label x:Name="IconLabel" FontSize="44" VerticalOptions="Center" />
+        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+          <HorizontalStackLayout Spacing="10">
+            <Label x:Name="NameLabel" Style="{StaticResource H1}" />
+            <Border x:Name="BadgeBorder" IsVisible="False" Padding="8,2" StrokeThickness="0" StrokeShape="RoundRectangle 6"
+                    VerticalOptions="Center" BackgroundColor="{StaticResource Secondary}">
+              <Label x:Name="BadgeLabel" Style="{StaticResource ChipLabel}" />
+            </Border>
+          </HorizontalStackLayout>
+          <Label x:Name="SummaryLabel" FontSize="15" />
+          <Label x:Name="HierarchyLabel" Style="{StaticResource Caption}" ToolTipProperties.Text="Cadeia de herança: de onde vêm as propriedades" />
+        </VerticalStackLayout>
+        <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
+          <Button x:Name="DocsButton" Text="📖 Docs oficiais" Clicked="OnDocsClicked" Style="{StaticResource SecondaryButton}" />
+          <Button x:Name="LessonButton" Text="🎓 Ver aula" Clicked="OnLessonClicked" Style="{StaticResource SecondaryButton}" />
+        </VerticalStackLayout>
+      </Grid>
+
+      <TipCard x:Name="StatusCard" Grid.Row="1" IsVisible="False" />
+
+      <!-- Prévia ao vivo -->
+      <Border Grid.Row="2" Style="{StaticResource DemoArea}" MinimumHeightRequest="240" Padding="0">
+        <Grid RowDefinitions="Auto,*">
+          <Grid ColumnDefinitions="*,Auto" Padding="14,8">
+            <Label Text="● PRÉVIA AO VIVO" Style="{StaticResource ChipLabel}" TextColor="{StaticResource Danger}" VerticalOptions="Center" />
+            <HorizontalStackLayout Grid.Column="1" Spacing="6">
+              <Button Text="Recriar" FontSize="11" Padding="8,2" MinimumHeightRequest="24" Clicked="OnRecreateClicked"
+                      Style="{StaticResource SecondaryButton}" ToolTipProperties.Text="Cria uma nova instância (descarta alterações)" />
+              <Button x:Name="BackgroundToggle" Text="Fundo" FontSize="11" Padding="8,2" MinimumHeightRequest="24" Clicked="OnBackgroundToggle"
+                      Style="{StaticResource SecondaryButton}" ToolTipProperties.Text="Alterna o fundo da prévia (claro/escuro/xadrez)" />
+            </HorizontalStackLayout>
+          </Grid>
+          <Grid x:Name="PreviewSurface" Grid.Row="1" Padding="20">
+            <ContentView x:Name="PreviewHost" HorizontalOptions="Center" VerticalOptions="Center" />
+          </Grid>
+        </Grid>
+      </Border>
+
+      <!-- Abas -->
+      <Grid Grid.Row="3" RowDefinitions="Auto,*" RowSpacing="8">
+        <HorizontalStackLayout x:Name="Tabs" Spacing="6" />
+        <ScrollView Grid.Row="1" x:Name="TabScroll">
+          <ContentView x:Name="TabContent" Padding="0,0,0,24" />
+        </ScrollView>
+      </Grid>
+    </Grid>
+
+    <!-- ================= Coluna direita: inspetor ================= -->
+    <Border Grid.Column="1" Margin="0,16,16,16" Padding="0" Style="{StaticResource Card}">
+      <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout Padding="14,12,14,0" Spacing="2">
+          <Label Text="🔬 Inspetor de propriedades" FontAttributes="Bold" FontSize="16" />
+          <Label x:Name="InspectorHint" Style="{StaticResource Caption}"
+                 Text="Todas as BindableProperties do objeto, agrupadas pela classe que as declara. Passe o mouse no nome para ver detalhes." />
+        </VerticalStackLayout>
+        <PropertyInspectorView x:Name="Inspector" Grid.Row="1" />
+      </Grid>
+    </Border>
+  </Grid>
+</AppPage>

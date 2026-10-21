@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 14 — Layout responsivo (desktop)
+  Faça o painel ficar HORIZONTAL quando a janela tiver 1000 ou mais de largura,
+  e VERTICAL quando for menor, usando AdaptiveTrigger dentro do StackLayout "Painel":
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup Name="Tamanho">
+            <VisualState Name="Larga">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="1000" />
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Property="Orientation" Value="Horizontal" />
+                </VisualState.Setters>
+            </VisualState>
+            <VisualState Name="Estreita">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="0" />
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Property="Orientation" Value="Vertical" />
+                </VisualState.Setters>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+  Depois redimensione a janela para testar.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D14Responsivo">
+
+  <StackLayout x:Name="Painel" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+    <BoxView Color="#512BD4" WidthRequest="120" HeightRequest="60" CornerRadius="8" />
+    <BoxView Color="#D600AA" WidthRequest="120" HeightRequest="60" CornerRadius="8" />
+    <BoxView Color="#2E9D5B" WidthRequest="120" HeightRequest="60" CornerRadius="8" />
+  </StackLayout>
+
+</ContentView>

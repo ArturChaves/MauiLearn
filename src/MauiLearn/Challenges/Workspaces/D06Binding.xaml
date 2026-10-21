@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 06 — Ligando um Slider
+  O Label não reage ao Slider. Use um BINDING entre controles:
+    • Text="{Binding Value, Source={x:Reference Volume}, StringFormat='Volume: {0:F0}'}"
+  A verificação vai mover o Slider para 42 e esperar o texto "Volume: 42".
+  Dica: como não há x:DataType aqui, o binding funciona (via reflexão). Para compilá-lo,
+  acrescente x:DataType=Slider dentro do binding.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D06Binding">
+
+  <VerticalStackLayout Spacing="20" VerticalOptions="Center" WidthRequest="320">
+    <Slider x:Name="Volume" Maximum="100" />
+    <Label x:Name="Valor" Text="Volume: ?" FontSize="24" HorizontalOptions="Center" />
+  </VerticalStackLayout>
+
+</ContentView>

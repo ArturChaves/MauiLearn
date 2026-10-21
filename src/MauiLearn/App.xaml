@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.App">
+  <!--
+    Application.Resources: recursos visíveis em TODO o app.
+    MergedDictionaries junta vários arquivos de recursos.
+  -->
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+        <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <!-- Conversores globais -->
+      <BoolToTextConverter x:Key="BoolToText" />
+      <InvertBoolConverter x:Key="InvertBool" />
+      <IsNotNullOrEmptyConverter x:Key="IsNotEmpty" />
+      <DoneToGlyphConverter x:Key="DoneGlyph" />
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

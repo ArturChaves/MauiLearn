@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  DESAFIO 05 — Jogo da velha (Grid 3×3)
+  Todas as 9 caixas estão empilhadas na mesma célula (0,0)!
+    1. Dê ao Grid 3 linhas e 3 colunas iguais: RowDefinitions="*,*,*" ColumnDefinitions="*,*,*"
+    2. Coloque cada BoxView numa célula diferente usando Grid.Row e Grid.Column.
+    3. A caixa x:Name="Centro" deve ficar no meio (Row 1, Column 1).
+    4. Bônus: RowSpacing e ColumnSpacing de 6.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLearn.Challenges.Workspaces.D05Grade">
+
+  <Grid x:Name="Tabuleiro" WidthRequest="300" HeightRequest="300">
+    <BoxView Color="#512BD4" />
+    <BoxView Color="#7B5CFA" />
+    <BoxView Color="#512BD4" />
+    <BoxView Color="#7B5CFA" />
+    <BoxView x:Name="Centro" Color="#D600AA" />
+    <BoxView Color="#7B5CFA" />
+    <BoxView Color="#512BD4" />
+    <BoxView Color="#7B5CFA" />
+    <BoxView Color="#512BD4" />
+  </Grid>
+
+</ContentView>
